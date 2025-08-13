@@ -5,19 +5,19 @@ import { Pressable, View, Text } from 'react-native';
 import { Image } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
-
+import { useTheme } from '@rneui/themed';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const { theme: { colors } } = useTheme();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: useClientOnlyValue(false, true),
+        headerStyle: { backgroundColor: colors.secondary },
+        tabBarStyle: { backgroundColor: colors.secondary },
+        tabBarInactiveTintColor: colors.black,
       }}>
       <Tabs.Screen
         name="index"
@@ -28,20 +28,20 @@ export default function TabLayout() {
           headerTitleAlign: 'center',
           headerTitle: () => (
             <View style={{ width: '100%' }}>
-              <Text style={{ fontSize: 22, fontWeight: 'bold' }}>Loại bằng lái</Text>
+              <Text style={{ fontSize: 22, fontWeight: 'bold', color: colors.black }}>Loại bằng lái</Text>
             </View>
           ),
 
           headerLeft: () => (
             <Image
-              style={{ width: 40, height: 40, borderRadius: 20, marginLeft: 15, backgroundColor: 'black' }}
+              style={{ width: 40, height: 40, borderRadius: 20, marginLeft: 15 }}
               source={require('../../assets/images/logo.png')}
             />
           ),
           headerRight: () => (
             <Link href="/modal" asChild>
               <Pressable style={{ marginRight: 15 }}>
-                <FontAwesome5 name="clipboard-list" size={20} />
+                <FontAwesome5 name="clipboard-list" size={20} color={colors.black} />
               </Pressable>
             </Link>
           ),

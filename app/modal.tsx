@@ -1,28 +1,37 @@
-import { StyleSheet } from 'react-native';
-
-import { Text, View } from '@/components/Themed';
+import { FlatList } from 'react-native';
+import { makeStyles, useTheme } from '@rneui/themed';
+import { Wrapper } from '@/src/components';
+import LicenseItem from '@/src/components/LicenseItem';
+import data from '../assets/data/License.json'
+import { LicenseItemType } from '@/src/models/LicenseItemType';
+import React, { useState } from 'react';
 
 export default function ModalScreen() {
+  const styles = useStyles();
+  const { theme: { colors } } = useTheme();
+
+  const [selectedId, setSelectedId] = useState<string>(data[0]?._id || "");
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>license</Text>
-    </View>
+    <Wrapper containerStyle={styles.container}>
+      <FlatList
+        data={data}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }: { item: LicenseItemType }) => (
+          <LicenseItem
+            description={item}
+            isSelected={selectedId === item._id}
+            onPress={() => setSelectedId(item._id)}
+          />
+        )}
+        contentContainerStyle={{ padding: 16 }}
+      />
+    </Wrapper>
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(({ colors }) => ({
   container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: colors.background
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-});
+}));

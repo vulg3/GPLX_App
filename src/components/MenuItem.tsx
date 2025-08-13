@@ -1,8 +1,8 @@
 import React from "react";
 import { Text, TouchableOpacity, Image } from "react-native";
 import { useTheme, makeStyles } from "@rneui/themed";
-import { AntDesign } from "@expo/vector-icons";
 import { MenuItemType } from "../models/MenuItemType";
+import AppIcon from "./AppIcon";
 
 interface MenuItemProps {
     menu: MenuItemType;
@@ -17,7 +17,13 @@ const MenuItem: React.FC<MenuItemProps> = ({ menu, onPress }) => {
         <TouchableOpacity style={styles.container} onPress={onPress} >
             <Image source={{ uri: menu.image }} style={styles.image} />
             <Text style={styles.title}>{menu.title}</Text>
-            <AntDesign name="right" size={18} color="#333" style={styles.arrow} />
+            <AppIcon
+                name="arrow-forward-ios"
+                type="MaterialIcons"
+                isPaddingIcon={false}
+                color={colors.black}
+                size={25}
+            />
         </TouchableOpacity>
     );
 };
@@ -28,11 +34,10 @@ const useStyles = makeStyles(({ colors }) => ({
     container: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#fff",
+        backgroundColor: colors.secondary,
         borderRadius: 12,
-        padding: 16,
+        padding: 10,
         marginVertical: 8,
-        marginHorizontal: 16,
         shadowColor: "#000",
         shadowOpacity: 0.05,
     },
@@ -45,14 +50,14 @@ const useStyles = makeStyles(({ colors }) => ({
         marginRight: 16,
     },
     image: {
-        width: 42,
-        height: 42,
+        width: 70,
+        height: 70,
     },
     title: {
         flex: 1,
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: "600",
-        color: "#333",
+        color: colors.black,
         margin: 20,
         marginLeft: 10,
     },

@@ -1,0 +1,27 @@
+[
+  {
+    "_id": "1",
+    "title": "Motorbike License A1",
+    "description": "Allows operation of motorbikes up to 175cc.ffff"
+  },
+  {
+    "_id": "2",
+    "title": "Motorbike License A2",
+    "description": "Permits driving motorbikes over 175cc."
+  },
+  {
+    "_id": "3",
+    "title": "Car License B1",
+    "description": "Enables driving passenger cars with up to 9 seats."
+  },
+  {
+    "_id": "4",
+    "title": "Car License B2",
+    "description": "Allows operation of manual transmission cars under 3,500 kg."
+  },
+  {
+    "_id": "5",
+    "title": "Truck License C",
+    "description": "Permits driving trucks over 3,500 kg and other heavy vehicles."
+  }
+]

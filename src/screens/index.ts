@@ -1,7 +1,12 @@
-export * from "./CommonlyWrongQuestion"
-export * from "./EliminationQuestion"
-export * from "./RanDTest"
-export * from "./Search"
-export * from "./SelectTest"
-export * from "./TheoryQuestion"
-export * from "./TrafficSigns"
+export { default as CarTab } from "./CarTab";
+export { default as Exam } from "./Exam";
+export { default as ExamHistory } from "./ExamHistory";
+export { default as ExamResult } from "./ExamResult";
+export { default as Home } from "./Home";
+export { default as LicenseSelection } from "./LicenseSelection";
+export { default as MotorbikeTab } from "./MotorbikeTab";
+export { default as QuestionList } from "./QuestionList";
+export { default as ReviewAnswers } from "./ReviewAnswers";
+export { default as Settings } from "./Settings";
+export { default as Study } from "./Study";
+export { default as WebViewScreen } from "./WebViewScreen";

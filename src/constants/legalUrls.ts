@@ -22,6 +22,6 @@ export const APP_INFO = {
   VERSION: "1.0.0",
   BUILD_NUMBER: "1",
   COPYRIGHT_YEAR: "2025",
-  COMPANY_NAME: "GPLX App",
-  SUPPORT_EMAIL: "support@gplxapp.com",
+  COMPANY_NAME: "Lý thuyết giao thông",
+  SUPPORT_EMAIL: "support@ltgt.com",
 };

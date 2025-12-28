@@ -1,3 +1,6 @@
+import Disclaimer from "@/screens/Disclaimer";
+import PrivacyPolicy from "@/screens/PrivacyPolicy";
+import TermsOfUse from "@/screens/TermsOfUse";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
@@ -97,6 +100,21 @@ function AppNavigator() {
         <Stack.Screen
           name="WebViewScreen"
           component={WebViewScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="PrivacyPolicy"
+          component={PrivacyPolicy}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="TermsOfUse"
+          component={TermsOfUse}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Disclaimer"
+          component={Disclaimer}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

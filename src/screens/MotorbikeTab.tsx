@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { AnimatedCard, PressableScale } from "../components";
+import { useTheme } from "../contexts/ThemeContext";
 import { Question } from "../types/Question";
 import { responsive, rv } from "../utils/responsive";
 import { getStatistics, saveSelectedLicense } from "../utils/storage";
@@ -20,6 +21,7 @@ import bikeQuestions from "../../assets/data/shlx.bike_questions.json";
 
 export default function MotorbikeTab() {
   const navigation = useNavigation();
+  const { isDarkMode, colors } = useTheme();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [stats, setStats] = useState({
     totalExams: 0,
@@ -81,7 +83,9 @@ export default function MotorbikeTab() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -107,8 +111,13 @@ export default function MotorbikeTab() {
 
         {/* Statistics */}
         {stats.totalExams > 0 && (
-          <AnimatedCard delay={100} style={styles.statsContainer}>
-            <Text style={styles.statsTitle}>📊 Thống kê của bạn</Text>
+          <AnimatedCard
+            delay={100}
+            style={[styles.statsContainer, { backgroundColor: colors.card }]}
+          >
+            <Text style={[styles.statsTitle, { color: colors.text }]}>
+              📊 Thống kê của bạn
+            </Text>
             <View style={styles.statsGrid}>
               <Animated.View
                 entering={FadeInUp.delay(200).springify()}
@@ -117,13 +126,17 @@ export default function MotorbikeTab() {
                 <View
                   style={[
                     styles.statIconContainer,
-                    { backgroundColor: "#e3f2fd" },
+                    { backgroundColor: isDarkMode ? "#1e3a5f" : "#e3f2fd" },
                   ]}
                 >
                   <Text style={styles.statIcon}>📝</Text>
                 </View>
-                <Text style={styles.statValue}>{stats.totalExams}</Text>
-                <Text style={styles.statLabel}>Lần thi</Text>
+                <Text style={[styles.statValue, { color: colors.text }]}>
+                  {stats.totalExams}
+                </Text>
+                <Text style={[styles.statLabel, { color: colors.subText }]}>
+                  Lần thi
+                </Text>
               </Animated.View>
               <Animated.View
                 entering={FadeInUp.delay(300).springify()}
@@ -132,7 +145,7 @@ export default function MotorbikeTab() {
                 <View
                   style={[
                     styles.statIconContainer,
-                    { backgroundColor: "#e8f5e9" },
+                    { backgroundColor: isDarkMode ? "#1e4620" : "#e8f5e9" },
                   ]}
                 >
                   <Text style={styles.statIcon}>✅</Text>
@@ -140,7 +153,9 @@ export default function MotorbikeTab() {
                 <Text style={[styles.statValue, { color: "#34C759" }]}>
                   {stats.passedExams}
                 </Text>
-                <Text style={styles.statLabel}>Đạt</Text>
+                <Text style={[styles.statLabel, { color: colors.subText }]}>
+                  Đạt
+                </Text>
               </Animated.View>
               <Animated.View
                 entering={FadeInUp.delay(400).springify()}
@@ -149,7 +164,7 @@ export default function MotorbikeTab() {
                 <View
                   style={[
                     styles.statIconContainer,
-                    { backgroundColor: "#fff3e0" },
+                    { backgroundColor: isDarkMode ? "#4a3320" : "#fff3e0" },
                   ]}
                 >
                   <Text style={styles.statIcon}>📈</Text>
@@ -157,7 +172,9 @@ export default function MotorbikeTab() {
                 <Text style={[styles.statValue, { color: "#FF9500" }]}>
                   {stats.averageScore}
                 </Text>
-                <Text style={styles.statLabel}>Điểm TB</Text>
+                <Text style={[styles.statLabel, { color: colors.subText }]}>
+                  Điểm TB
+                </Text>
               </Animated.View>
               <Animated.View
                 entering={FadeInUp.delay(500).springify()}
@@ -166,7 +183,7 @@ export default function MotorbikeTab() {
                 <View
                   style={[
                     styles.statIconContainer,
-                    { backgroundColor: "#e3f2fd" },
+                    { backgroundColor: isDarkMode ? "#1e3a5f" : "#e3f2fd" },
                   ]}
                 >
                   <Text style={styles.statIcon}>🏆</Text>
@@ -174,7 +191,9 @@ export default function MotorbikeTab() {
                 <Text style={[styles.statValue, { color: "#007AFF" }]}>
                   {stats.bestScore}
                 </Text>
-                <Text style={styles.statLabel}>Cao nhất</Text>
+                <Text style={[styles.statLabel, { color: colors.subText }]}>
+                  Cao nhất
+                </Text>
               </Animated.View>
             </View>
           </AnimatedCard>
@@ -256,23 +275,71 @@ export default function MotorbikeTab() {
         </View>
 
         {/* Tips */}
-        <View style={styles.tipsContainer}>
-          <Text style={styles.tipsTitle}>💡 Mẹo ôn thi</Text>
+        <View
+          style={[
+            styles.tipsContainer,
+            { backgroundColor: isDarkMode ? "#3a3020" : "#fff3cd" },
+          ]}
+        >
+          <Text
+            style={[
+              styles.tipsTitle,
+              { color: isDarkMode ? "#ffd54f" : "#856404" },
+            ]}
+          >
+            💡 Mẹo ôn thi
+          </Text>
           <View style={styles.tipItem}>
-            <Text style={styles.tipBullet}>•</Text>
-            <Text style={styles.tipText}>
+            <Text
+              style={[
+                styles.tipBullet,
+                { color: isDarkMode ? "#ffd54f" : "#856404" },
+              ]}
+            >
+              •
+            </Text>
+            <Text
+              style={[
+                styles.tipText,
+                { color: isDarkMode ? "#ffd54f" : "#856404" },
+              ]}
+            >
               Học kỹ các câu điểm liệt - sai 1 câu là trượt
             </Text>
           </View>
           <View style={styles.tipItem}>
-            <Text style={styles.tipBullet}>•</Text>
-            <Text style={styles.tipText}>
+            <Text
+              style={[
+                styles.tipBullet,
+                { color: isDarkMode ? "#ffd54f" : "#856404" },
+              ]}
+            >
+              •
+            </Text>
+            <Text
+              style={[
+                styles.tipText,
+                { color: isDarkMode ? "#ffd54f" : "#856404" },
+              ]}
+            >
               Cần đúng ≥ 21/25 câu (84%) để đạt yêu cầu
             </Text>
           </View>
           <View style={styles.tipItem}>
-            <Text style={styles.tipBullet}>•</Text>
-            <Text style={styles.tipText}>
+            <Text
+              style={[
+                styles.tipBullet,
+                { color: isDarkMode ? "#ffd54f" : "#856404" },
+              ]}
+            >
+              •
+            </Text>
+            <Text
+              style={[
+                styles.tipText,
+                { color: isDarkMode ? "#ffd54f" : "#856404" },
+              ]}
+            >
               Làm quen với biển báo và sa hình giao thông
             </Text>
           </View>
@@ -285,7 +352,6 @@ export default function MotorbikeTab() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
   },
   scrollView: {
     flex: 1,
@@ -415,7 +481,6 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   tipsContainer: {
-    backgroundColor: "#fff3cd",
     margin: responsive.spacing.base,
     padding: responsive.padding.base,
     borderRadius: responsive.radius.base,
@@ -424,7 +489,6 @@ const styles = StyleSheet.create({
   tipsTitle: {
     fontSize: responsive.fontSize.base,
     fontWeight: "bold",
-    color: "#856404",
     marginBottom: responsive.spacing.sm,
   },
   tipItem: {
@@ -433,13 +497,11 @@ const styles = StyleSheet.create({
   },
   tipBullet: {
     fontSize: 16,
-    color: "#856404",
     marginRight: 8,
   },
   tipText: {
     flex: 1,
     fontSize: 14,
-    color: "#856404",
     lineHeight: 20,
   },
 });

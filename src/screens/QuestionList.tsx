@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { AnimatedCard, PressableScale } from "../components";
+import { useTheme } from "../contexts/ThemeContext";
 import { Question } from "../types/Question";
 import { getCategoryDisplayName } from "../utils/examGenerator";
 
@@ -21,6 +22,7 @@ const { width } = Dimensions.get("window");
 export default function QuestionList() {
   const route = useRoute();
   const navigation = useNavigation();
+  const { isDarkMode, colors } = useTheme();
   const { questions, category } = route.params as {
     questions: Question[];
     category: string;
@@ -65,15 +67,38 @@ export default function QuestionList() {
         onPress={() => handleAnswerSelect(questionId, index)}
         style={[
           styles.answerItem,
-          isSelected && styles.answerSelected,
-          showResult && isCorrect && styles.answerCorrect,
-          showResult && isSelected && !isCorrect && styles.answerIncorrect,
+          {
+            backgroundColor: isDarkMode ? colors.card : "#f8f9fa",
+            borderColor: isDarkMode ? colors.border : "#e0e0e0",
+          },
+          isSelected && [
+            styles.answerSelected,
+            {
+              backgroundColor: isDarkMode ? "#1e3a5f" : "#e3f2fd",
+            },
+          ],
+          showResult &&
+            isCorrect && [
+              styles.answerCorrect,
+              {
+                backgroundColor: isDarkMode ? "#1e4620" : "#d4edda",
+              },
+            ],
+          showResult &&
+            isSelected &&
+            !isCorrect && [
+              styles.answerIncorrect,
+              {
+                backgroundColor: isDarkMode ? "#4a1a1a" : "#f8d7da",
+              },
+            ],
         ]}
       >
         <View style={styles.answerLeft}>
           <View
             style={[
               styles.answerIndicator,
+              { borderColor: isDarkMode ? colors.border : "#ccc" },
               isSelected && styles.answerIndicatorSelected,
               showResult && isCorrect && styles.answerIndicatorCorrect,
               showResult &&
@@ -93,6 +118,7 @@ export default function QuestionList() {
           <Text
             style={[
               styles.answerText,
+              { color: colors.text },
               isSelected && styles.answerTextSelected,
               showResult && isCorrect && styles.answerTextCorrect,
               showResult &&
@@ -121,6 +147,7 @@ export default function QuestionList() {
         delay={0}
         style={[
           styles.questionCard,
+          { backgroundColor: colors.card },
           ...(isDiemLiet ? [styles.questionCardCritical] : []),
         ]}
       >
@@ -147,7 +174,9 @@ export default function QuestionList() {
           </View>
         </View>
 
-        <Text style={styles.questionText}>{question.question}</Text>
+        <Text style={[styles.questionText, { color: colors.text }]}>
+          {question.question}
+        </Text>
 
         {question.hinhanhq && (
           <Image
@@ -159,8 +188,12 @@ export default function QuestionList() {
           />
         )}
 
-        <View style={styles.answersContainer}>
-          <Text style={styles.answersTitle}>Chọn đáp án:</Text>
+        <View
+          style={[styles.answersContainer, { borderTopColor: colors.border }]}
+        >
+          <Text style={[styles.answersTitle, { color: colors.text }]}>
+            Chọn đáp án:
+          </Text>
           {question.answers.map((answer, idx) => (
             <Animated.View
               key={idx}
@@ -173,10 +206,30 @@ export default function QuestionList() {
           {question.explanation && (
             <Animated.View
               entering={FadeInDown.delay(400).springify()}
-              style={styles.explanationContainer}
+              style={[
+                styles.explanationContainer,
+                {
+                  backgroundColor: isDarkMode ? "#3a3020" : "#fff3cd",
+                  borderLeftColor: isDarkMode ? "#ffd54f" : "#ffc107",
+                },
+              ]}
             >
-              <Text style={styles.explanationTitle}>💡 Giải thích:</Text>
-              <Text style={styles.explanationText}>{question.explanation}</Text>
+              <Text
+                style={[
+                  styles.explanationTitle,
+                  { color: isDarkMode ? "#ffd54f" : "#856404" },
+                ]}
+              >
+                💡 Giải thích:
+              </Text>
+              <Text
+                style={[
+                  styles.explanationText,
+                  { color: isDarkMode ? "#ffd54f" : "#856404" },
+                ]}
+              >
+                {question.explanation}
+              </Text>
             </Animated.View>
           )}
         </View>
@@ -185,8 +238,15 @@ export default function QuestionList() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
+      <View
+        style={[
+          styles.header,
+          { backgroundColor: colors.card, borderBottomColor: colors.border },
+        ]}
+      >
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backButton}
@@ -194,10 +254,13 @@ export default function QuestionList() {
           <Text style={styles.backButtonText}>‹ Quay lại</Text>
         </TouchableOpacity>
         <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerTitle} numberOfLines={1}>
+          <Text
+            style={[styles.headerTitle, { color: colors.text }]}
+            numberOfLines={1}
+          >
             {getCategoryDisplayName(category)}
           </Text>
-          <Text style={styles.headerSubtitle}>
+          <Text style={[styles.headerSubtitle, { color: colors.subText }]}>
             Câu {currentQuestionIndex + 1}/{questions.length}
           </Text>
         </View>
@@ -209,7 +272,12 @@ export default function QuestionList() {
       </ScrollView>
 
       {/* Navigation */}
-      <View style={styles.navigation}>
+      <View
+        style={[
+          styles.navigation,
+          { backgroundColor: colors.card, borderTopColor: colors.border },
+        ]}
+      >
         <View style={styles.navigationButtons}>
           <PressableScale
             style={[
@@ -294,6 +362,8 @@ export default function QuestionList() {
                       ? ["#007AFF", "#5856D6"]
                       : isAnswered
                       ? ["#34C759", "#28a745"]
+                      : isDarkMode
+                      ? [colors.card, colors.background]
                       : ["#f0f0f0", "#e0e0e0"]
                   }
                   style={styles.questionDot}
@@ -303,7 +373,14 @@ export default function QuestionList() {
                   <Text
                     style={[
                       styles.questionDotText,
-                      (isAnswered || isCurrent) && styles.questionDotTextActive,
+                      {
+                        color:
+                          isAnswered || isCurrent
+                            ? "#fff"
+                            : isDarkMode
+                            ? colors.text
+                            : "#666",
+                      },
                     ]}
                   >
                     {index + 1}
@@ -321,16 +398,13 @@ export default function QuestionList() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     padding: 16,
-    backgroundColor: "#fff",
     borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
   },
   backButton: {
     width: 80,
@@ -346,11 +420,9 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#1a1a1a",
   },
   headerSubtitle: {
     fontSize: 12,
-    color: "#666",
     marginTop: 2,
   },
   content: {
@@ -401,7 +473,6 @@ const styles = StyleSheet.create({
   },
   questionText: {
     fontSize: 16,
-    color: "#1a1a1a",
     lineHeight: 24,
     marginBottom: 8,
   },
@@ -416,34 +487,27 @@ const styles = StyleSheet.create({
     marginTop: 16,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: "#e0e0e0",
   },
   answersTitle: {
     fontSize: 14,
     fontWeight: "bold",
-    color: "#1a1a1a",
     marginBottom: 12,
   },
   answerItem: {
-    backgroundColor: "#f8f9fa",
     borderRadius: 12,
     padding: 14,
     marginBottom: 10,
     borderWidth: 2,
-    borderColor: "#e0e0e0",
   },
   answerSelected: {
-    backgroundColor: "#e3f2fd",
     borderColor: "#007AFF",
     borderWidth: 2,
   },
   answerCorrect: {
-    backgroundColor: "#d4edda",
     borderColor: "#34C759",
     borderWidth: 2,
   },
   answerIncorrect: {
-    backgroundColor: "#f8d7da",
     borderColor: "#FF3B30",
     borderWidth: 2,
   },
@@ -456,7 +520,6 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: "#ccc",
     marginRight: 8,
     alignItems: "center",
     justifyContent: "center",
@@ -492,7 +555,6 @@ const styles = StyleSheet.create({
   answerText: {
     flex: 1,
     fontSize: 15,
-    color: "#1a1a1a",
     lineHeight: 22,
   },
   answerTextSelected: {
@@ -508,28 +570,22 @@ const styles = StyleSheet.create({
     color: "#721c24",
   },
   explanationContainer: {
-    backgroundColor: "#fff3cd",
     borderRadius: 8,
     padding: 12,
     marginTop: 12,
     borderLeftWidth: 4,
-    borderLeftColor: "#ffc107",
   },
   explanationTitle: {
     fontSize: 14,
     fontWeight: "bold",
-    color: "#856404",
     marginBottom: 8,
   },
   explanationText: {
     fontSize: 14,
-    color: "#856404",
     lineHeight: 20,
   },
   navigation: {
-    backgroundColor: "#fff",
     borderTopWidth: 1,
-    borderTopColor: "#e0e0e0",
     paddingBottom: 8,
   },
   navigationButtons: {
@@ -585,10 +641,6 @@ const styles = StyleSheet.create({
   },
   questionDotText: {
     fontSize: 15,
-    color: "#666",
     fontWeight: "700",
-  },
-  questionDotTextActive: {
-    color: "#fff",
   },
 });

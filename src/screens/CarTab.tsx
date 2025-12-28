@@ -354,7 +354,6 @@ export default function CarTab() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
   },
   scrollView: {
     flex: 1,
@@ -484,7 +483,6 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   tipsContainer: {
-    backgroundColor: "#fff3cd",
     margin: responsive.spacing.base,
     padding: responsive.padding.base,
     borderRadius: responsive.radius.base,
@@ -493,7 +491,6 @@ const styles = StyleSheet.create({
   tipsTitle: {
     fontSize: responsive.fontSize.base,
     fontWeight: "bold",
-    color: "#856404",
     marginBottom: responsive.spacing.sm,
   },
   tipItem: {
@@ -502,13 +499,11 @@ const styles = StyleSheet.create({
   },
   tipBullet: {
     fontSize: 16,
-    color: "#856404",
     marginRight: 8,
   },
   tipText: {
     flex: 1,
     fontSize: 14,
-    color: "#856404",
     lineHeight: 20,
   },
 });

@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import { PressableScale } from "../components";
+import { useTheme } from "../contexts/ThemeContext";
 import { ExamResult, LicenseType } from "../types/Question";
 import { isTablet, responsive, rs, rv } from "../utils/responsive";
 import { deleteExamResult, getExamResultsByLicense } from "../utils/storage";
@@ -18,6 +19,7 @@ import { deleteExamResult, getExamResultsByLicense } from "../utils/storage";
 export default function ExamHistory() {
   const route = useRoute();
   const navigation = useNavigation();
+  const { isDarkMode, colors } = useTheme();
   const { licenseType } = route.params as { licenseType: LicenseType };
 
   const [results, setResults] = useState<ExamResult[]>([]);
@@ -62,7 +64,13 @@ export default function ExamHistory() {
         >
           <LinearGradient
             colors={
-              item.passed ? ["#d4edda", "#e8f5e9"] : ["#f8d7da", "#ffe5e5"]
+              isDarkMode
+                ? item.passed
+                  ? ["#1e4620", "#1a3a1a"]
+                  : ["#4a1a1a", "#3a1515"]
+                : item.passed
+                ? ["#d4edda", "#e8f5e9"]
+                : ["#f8d7da", "#ffe5e5"]
             }
             style={[
               styles.resultCard,
@@ -107,8 +115,12 @@ export default function ExamHistory() {
                 >
                   <Text style={styles.statEmoji}>📊</Text>
                 </View>
-                <Text style={styles.statValue}>{item.score}</Text>
-                <Text style={styles.statLabel}>Điểm</Text>
+                <Text style={[styles.statValue, { color: colors.text }]}>
+                  {item.score}
+                </Text>
+                <Text style={[styles.statLabel, { color: colors.subText }]}>
+                  Điểm
+                </Text>
               </View>
               <View style={styles.statItem}>
                 <View
@@ -119,7 +131,9 @@ export default function ExamHistory() {
                 <Text style={[styles.statValue, { color: "#34C759" }]}>
                   {correctCount}
                 </Text>
-                <Text style={styles.statLabel}>Đúng</Text>
+                <Text style={[styles.statLabel, { color: colors.subText }]}>
+                  Đúng
+                </Text>
               </View>
               <View style={styles.statItem}>
                 <View
@@ -130,12 +144,14 @@ export default function ExamHistory() {
                 <Text style={[styles.statValue, { color: "#FF3B30" }]}>
                   {item.totalQuestions - correctCount}
                 </Text>
-                <Text style={styles.statLabel}>Sai</Text>
+                <Text style={[styles.statLabel, { color: colors.subText }]}>
+                  Sai
+                </Text>
               </View>
             </View>
 
             <View style={styles.resultFooter}>
-              <Text style={styles.resultDate}>
+              <Text style={[styles.resultDate, { color: colors.subText }]}>
                 📅 {date.toLocaleDateString("vi-VN")}{" "}
                 {date.toLocaleTimeString("vi-VN", {
                   hour: "2-digit",
@@ -151,8 +167,15 @@ export default function ExamHistory() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <LinearGradient colors={["#fff", "#f8f9fa"]} style={styles.header}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
+      <LinearGradient
+        colors={
+          isDarkMode ? [colors.card, colors.background] : ["#fff", "#f8f9fa"]
+        }
+        style={[styles.header, { borderBottomColor: colors.border }]}
+      >
         <PressableScale
           onPress={() => navigation.goBack()}
           style={styles.backButton}
@@ -160,10 +183,15 @@ export default function ExamHistory() {
           <Text style={styles.backButtonText}>‹ Quay lại</Text>
         </PressableScale>
         <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerTitle} numberOfLines={1}>
+          <Text
+            style={[styles.headerTitle, { color: colors.text }]}
+            numberOfLines={1}
+          >
             Lịch sử thi
           </Text>
-          <Text style={styles.headerSubtitle}>{results.length} bài thi</Text>
+          <Text style={[styles.headerSubtitle, { color: colors.subText }]}>
+            {results.length} bài thi
+          </Text>
         </View>
         <View style={styles.headerSpacer} />
       </LinearGradient>
@@ -179,8 +207,10 @@ export default function ExamHistory() {
           >
             <Text style={styles.emptyIcon}>📝</Text>
           </LinearGradient>
-          <Text style={styles.emptyTitle}>Chưa có lịch sử thi</Text>
-          <Text style={styles.emptyText}>
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>
+            Chưa có lịch sử thi
+          </Text>
+          <Text style={[styles.emptyText, { color: colors.subText }]}>
             Bắt đầu làm bài thi thử để xem kết quả tại đây
           </Text>
         </Animated.View>
@@ -200,7 +230,6 @@ export default function ExamHistory() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
   },
   header: {
     flexDirection: "row",
@@ -209,7 +238,6 @@ const styles = StyleSheet.create({
     padding: responsive.padding.lg,
     paddingBottom: responsive.padding.lg,
     borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
     minHeight: responsive.header.height,
   },
   backButton: {
@@ -230,12 +258,10 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: responsive.fontSize["2xl"],
     fontWeight: "bold",
-    color: "#1a1a1a",
     textAlign: "center",
   },
   headerSubtitle: {
     fontSize: responsive.fontSize.sm,
-    color: "#666",
     marginTop: 2,
     textAlign: "center",
   },
@@ -333,11 +359,9 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: isTablet ? 28 : 24,
     fontWeight: "bold",
-    color: "#1a1a1a",
   },
   statLabel: {
     fontSize: isTablet ? 14 : 12,
-    color: "#666",
     marginTop: 4,
   },
   resultFooter: {
@@ -347,7 +371,6 @@ const styles = StyleSheet.create({
   },
   resultDate: {
     fontSize: isTablet ? 16 : 14,
-    color: "#666",
   },
   viewDetails: {
     fontSize: isTablet ? 16 : 14,
@@ -374,12 +397,10 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: isTablet ? 28 : 22,
     fontWeight: "bold",
-    color: "#1a1a1a",
     marginBottom: isTablet ? 16 : 12,
   },
   emptyText: {
     fontSize: isTablet ? 18 : 16,
-    color: "#666",
     textAlign: "center",
     lineHeight: isTablet ? 28 : 24,
     maxWidth: isTablet ? 400 : 300,

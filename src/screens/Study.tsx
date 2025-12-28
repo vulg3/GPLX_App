@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { AnimatedCard, PressableScale } from "../components";
+import { useTheme } from "../contexts/ThemeContext";
 import { LicenseType, Question } from "../types/Question";
 import {
   getCategoryDisplayName,
@@ -19,6 +20,7 @@ import {
 export default function Study() {
   const route = useRoute();
   const navigation = useNavigation();
+  const { isDarkMode, colors } = useTheme();
   const { questions } = route.params as {
     questions: Question[];
     licenseType: LicenseType;
@@ -79,7 +81,11 @@ export default function Study() {
           onPress={() => handleCategoryPress(category)}
         >
           <LinearGradient
-            colors={["#fff", "#fafafa"]}
+            colors={
+              isDarkMode
+                ? [colors.card, colors.background]
+                : ["#fff", "#fafafa"]
+            }
             style={[styles.categoryCard, { borderLeftColor: color }]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
@@ -94,13 +100,22 @@ export default function Study() {
                 <Text style={styles.categoryIconText}>{icon}</Text>
               </LinearGradient>
               <View style={styles.categoryInfo}>
-                <Text style={styles.categoryName}>{displayName}</Text>
-                <Text style={styles.categoryCount}>
+                <Text style={[styles.categoryName, { color: colors.text }]}>
+                  {displayName}
+                </Text>
+                <Text style={[styles.categoryCount, { color: colors.subText }]}>
                   {questionCount} câu hỏi
                 </Text>
               </View>
             </View>
-            <Text style={styles.categoryArrow}>›</Text>
+            <Text
+              style={[
+                styles.categoryArrow,
+                { color: isDarkMode ? colors.border : "#ccc" },
+              ]}
+            >
+              ›
+            </Text>
           </LinearGradient>
         </PressableScale>
       </AnimatedCard>
@@ -108,21 +123,50 @@ export default function Study() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
+      <View
+        style={[
+          styles.header,
+          { backgroundColor: colors.card, borderBottomColor: colors.border },
+        ]}
+      >
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backButton}
         >
           <Text style={styles.backButtonText}>‹ Quay lại</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Học câu hỏi</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>
+          Học câu hỏi
+        </Text>
         <View style={{ width: 80 }} />
       </View>
 
-      <View style={styles.infoCard}>
-        <Text style={styles.infoTitle}>📚 Danh mục câu hỏi</Text>
-        <Text style={styles.infoText}>
+      <View
+        style={[
+          styles.infoCard,
+          {
+            backgroundColor: isDarkMode ? "#1e3a5f" : "#e3f2fd",
+            borderLeftColor: isDarkMode ? "#5896e3" : "#2196F3",
+          },
+        ]}
+      >
+        <Text
+          style={[
+            styles.infoTitle,
+            { color: isDarkMode ? "#5896e3" : "#1976D2" },
+          ]}
+        >
+          📚 Danh mục câu hỏi
+        </Text>
+        <Text
+          style={[
+            styles.infoText,
+            { color: isDarkMode ? "#5896e3" : "#1976D2" },
+          ]}
+        >
           Chọn danh mục để xem chi tiết các câu hỏi và đáp án
         </Text>
       </View>
@@ -145,16 +189,13 @@ export default function Study() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     padding: 16,
-    backgroundColor: "#fff",
     borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
   },
   backButton: {
     width: 80,
@@ -166,28 +207,23 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#1a1a1a",
   },
   content: {
     flex: 1,
   },
   infoCard: {
-    backgroundColor: "#e3f2fd",
     margin: 16,
     padding: 16,
     borderRadius: 12,
     borderLeftWidth: 4,
-    borderLeftColor: "#2196F3",
   },
   infoTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#1976D2",
     marginBottom: 8,
   },
   infoText: {
     fontSize: 14,
-    color: "#1976D2",
     lineHeight: 20,
   },
   categoriesContainer: {
@@ -227,16 +263,13 @@ const styles = StyleSheet.create({
   categoryName: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#1a1a1a",
     marginBottom: 4,
   },
   categoryCount: {
     fontSize: 14,
-    color: "#666",
   },
   categoryArrow: {
     fontSize: 28,
-    color: "#ccc",
     marginLeft: 8,
   },
 });

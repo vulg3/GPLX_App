@@ -18,16 +18,12 @@ import { useTheme } from "../contexts/ThemeContext";
 
 export default function Settings() {
   const navigation = useNavigation();
-  const { isDarkMode, setTheme, theme } = useTheme();
+  const { isDarkMode, setTheme, colors } = useTheme();
 
   const toggleTheme = async () => {
     try {
       const newTheme = isDarkMode ? "light" : "dark";
       await setTheme(newTheme);
-      Alert.alert(
-        "Chủ đề",
-        `Đã chuyển sang chế độ ${!isDarkMode ? "tối" : "sáng"}`
-      );
     } catch (error) {
       Alert.alert("Lỗi", "Không thể thay đổi chủ đề");
     }
@@ -68,7 +64,6 @@ export default function Settings() {
   const cardBackground = isDarkMode ? "#2a2a2a" : "#fff";
   const textColor = isDarkMode ? "#fff" : "#1a1a1a";
   const subTextColor = isDarkMode ? "#aaa" : "#666";
-  const borderColor = isDarkMode ? "#444" : "#eee";
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
@@ -107,37 +102,14 @@ export default function Settings() {
             </TouchableOpacity>
           </View>
 
-          {/* About Section */}
-          <View style={[styles.section, { backgroundColor: cardBackground }]}>
-            <Text style={[styles.sectionTitle, { color: textColor }]}>
-              Thông tin
-            </Text>
-
-            <View style={styles.settingRow}>
-              <View style={styles.settingLeft}>
-                <Ionicons name="information-circle" size={24} color="#007AFF" />
-                <Text style={[styles.settingTitle, { color: textColor }]}>
-                  Phiên bản
-                </Text>
-              </View>
-              <Text style={[styles.settingValue, { color: subTextColor }]}>
-                {APP_INFO.VERSION}
-              </Text>
-            </View>
-          </View>
-
           {/* Legal Section */}
           <View style={[styles.section, { backgroundColor: cardBackground }]}>
-            <Text style={[styles.sectionTitle, { color: textColor }]}>
-              Pháp lý
-            </Text>
-
             <TouchableOpacity
               style={styles.settingRow}
               onPress={() => handleNavigate("PrivacyPolicy")}
             >
               <View style={styles.settingLeft}>
-                <Ionicons name="shield-checkmark" size={24} color="#34C759" />
+                <Ionicons name="shield-checkmark" size={24} color="#667eea" />
                 <Text style={[styles.settingTitle, { color: textColor }]}>
                   Chính sách bảo mật
                 </Text>
@@ -145,14 +117,19 @@ export default function Settings() {
               <Ionicons name="chevron-forward" size={20} color={subTextColor} />
             </TouchableOpacity>
 
-            <View style={[styles.divider, { backgroundColor: borderColor }]} />
+            <View
+              style={[
+                styles.divider,
+                { backgroundColor: isDarkMode ? "#3a3a3a" : "#e0e0e0" },
+              ]}
+            />
 
             <TouchableOpacity
               style={styles.settingRow}
               onPress={() => handleNavigate("TermsOfUse")}
             >
               <View style={styles.settingLeft}>
-                <Ionicons name="document-text" size={24} color="#007AFF" />
+                <Ionicons name="document-text" size={24} color="#667eea" />
                 <Text style={[styles.settingTitle, { color: textColor }]}>
                   Điều khoản sử dụng
                 </Text>
@@ -160,14 +137,19 @@ export default function Settings() {
               <Ionicons name="chevron-forward" size={20} color={subTextColor} />
             </TouchableOpacity>
 
-            <View style={[styles.divider, { backgroundColor: borderColor }]} />
+            <View
+              style={[
+                styles.divider,
+                { backgroundColor: isDarkMode ? "#3a3a3a" : "#e0e0e0" },
+              ]}
+            />
 
             <TouchableOpacity
               style={styles.settingRow}
               onPress={() => handleNavigate("Disclaimer")}
             >
               <View style={styles.settingLeft}>
-                <Ionicons name="warning" size={24} color="#FF9500" />
+                <Ionicons name="warning" size={24} color="#667eea" />
                 <Text style={[styles.settingTitle, { color: textColor }]}>
                   Tuyên bố từ chối
                 </Text>
@@ -215,9 +197,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    paddingHorizontal: responsive.padding.lg,
+    padding: responsive.padding.xl,
     paddingTop: responsive.padding.lg,
-    paddingBottom: responsive.padding.base,
   },
   headerTitle: {
     fontSize: responsive.fontSize["3xl"],
@@ -227,46 +208,42 @@ const styles = StyleSheet.create({
     padding: responsive.padding.base,
   },
   section: {
-    borderRadius: responsive.radius.base,
+    borderRadius: 12,
+    padding: responsive.padding.sm,
     marginBottom: responsive.spacing.base,
-    paddingHorizontal: responsive.padding.base,
-    paddingVertical: responsive.padding.sm,
-  },
-  sectionTitle: {
-    fontSize: responsive.fontSize.base,
-    fontWeight: "600",
-    marginBottom: responsive.spacing.sm,
-    marginLeft: responsive.spacing.xs,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
   },
   settingRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: responsive.padding.sm,
+    paddingVertical: responsive.spacing.base,
+    paddingHorizontal: responsive.padding.sm,
   },
   settingLeft: {
     flexDirection: "row",
     alignItems: "center",
+    gap: 12,
     flex: 1,
   },
   settingTitle: {
     fontSize: responsive.fontSize.base,
-    marginLeft: responsive.spacing.sm,
-  },
-  settingValue: {
-    fontSize: responsive.fontSize.base,
+    fontWeight: "500",
   },
   divider: {
     height: 1,
-    marginVertical: responsive.spacing.sm,
+    marginHorizontal: responsive.padding.sm,
   },
   footer: {
     alignItems: "center",
-    marginTop: responsive.spacing["2xl"],
-    marginBottom: responsive.spacing.lg,
+    paddingVertical: 32,
+    gap: 4,
   },
   footerText: {
     fontSize: responsive.fontSize.sm,
-    marginVertical: responsive.spacing.xs,
   },
 });

@@ -240,7 +240,7 @@ export default function CarTab() {
                   <Text style={styles.actionIconText}>✍️</Text>
                 </View>
                 <View style={styles.actionContent}>
-                  <Text style={styles.actionTitle}>Thi thử 25 câu</Text>
+                  <Text style={styles.actionTitle}>Thi thử 30 câu</Text>
                   <Text style={styles.actionDescription}>
                     Làm bài thi giống như thi thật
                   </Text>
@@ -324,7 +324,7 @@ export default function CarTab() {
                 { color: isDarkMode ? "#ffd54f" : "#856404" },
               ]}
             >
-              Cần đúng ≥ 21/25 câu (84%) để đạt yêu cầu
+              Cần đúng ≥ 27/30 câu (90%) để đạt yêu cầu
             </Text>
           </View>
           <View style={styles.tipItem}>

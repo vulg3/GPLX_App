@@ -38,9 +38,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       if (savedTheme) {
         setThemeState(savedTheme as Theme);
       }
-    } catch (error) {
-      console.log("Error loading theme:", error);
-    }
+    } catch (error) {}
   };
 
   const setTheme = async (newTheme: Theme) => {
@@ -48,7 +46,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
       await AsyncStorage.setItem(THEME_STORAGE_KEY, newTheme);
       setThemeState(newTheme);
     } catch (error) {
-      console.log("Error saving theme:", error);
       throw error;
     }
   };

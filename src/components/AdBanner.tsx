@@ -18,9 +18,7 @@ export const AdBanner: React.FC<AdBannerProps> = ({ size }) => {
         requestOptions={{
           requestNonPersonalizedAdsOnly: false,
         }}
-        onAdLoaded={() => {
-          console.log("Banner ad loaded");
-        }}
+        onAdLoaded={() => {}}
         onAdFailedToLoad={(error) => {
           console.error("Banner ad failed to load:", error);
         }}

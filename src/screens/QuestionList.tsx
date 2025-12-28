@@ -12,7 +12,11 @@ import {
   View,
 } from "react-native";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
-import { AnimatedCard, PressableScale } from "../components";
+import {
+  AnimatedCard,
+  PressableScale,
+  TouchableScreenWrapper,
+} from "../components";
 import { useTheme } from "../contexts/ThemeContext";
 import { Question } from "../types/Question";
 import { getCategoryDisplayName } from "../utils/examGenerator";
@@ -238,160 +242,162 @@ export default function QuestionList() {
   };
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: colors.background }]}
-    >
-      <View
-        style={[
-          styles.header,
-          { backgroundColor: colors.card, borderBottomColor: colors.border },
-        ]}
+    <TouchableScreenWrapper>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
       >
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
+        <View
+          style={[
+            styles.header,
+            { backgroundColor: colors.card, borderBottomColor: colors.border },
+          ]}
         >
-          <Text style={styles.backButtonText}>‹ Quay lại</Text>
-        </TouchableOpacity>
-        <View style={styles.headerTitleContainer}>
-          <Text
-            style={[styles.headerTitle, { color: colors.text }]}
-            numberOfLines={1}
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
           >
-            {getCategoryDisplayName(category)}
-          </Text>
-          <Text style={[styles.headerSubtitle, { color: colors.subText }]}>
-            Câu {currentQuestionIndex + 1}/{questions.length}
-          </Text>
-        </View>
-        <View style={{ width: 80 }} />
-      </View>
-
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {renderCurrentQuestion()}
-      </ScrollView>
-
-      {/* Navigation */}
-      <View
-        style={[
-          styles.navigation,
-          { backgroundColor: colors.card, borderTopColor: colors.border },
-        ]}
-      >
-        <View style={styles.navigationButtons}>
-          <PressableScale
-            style={[
-              styles.navButtonWrapper,
-              currentQuestionIndex === 0 && styles.navButtonDisabled,
-            ]}
-            onPress={handlePrevious}
-            disabled={currentQuestionIndex === 0}
-          >
-            <LinearGradient
-              colors={
-                currentQuestionIndex === 0
-                  ? ["#e0e0e0", "#e0e0e0"]
-                  : ["#007AFF", "#5856D6"]
-              }
-              style={styles.navButton}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
+            <Text style={styles.backButtonText}>‹ Quay lại</Text>
+          </TouchableOpacity>
+          <View style={styles.headerTitleContainer}>
+            <Text
+              style={[styles.headerTitle, { color: colors.text }]}
+              numberOfLines={1}
             >
-              <Text
-                style={[
-                  styles.navButtonText,
-                  currentQuestionIndex === 0 && styles.navButtonTextDisabled,
-                ]}
-              >
-                ‹ Câu trước
-              </Text>
-            </LinearGradient>
-          </PressableScale>
-
-          <PressableScale
-            style={[
-              styles.navButtonWrapper,
-              currentQuestionIndex === questions.length - 1 &&
-                styles.navButtonDisabled,
-            ]}
-            onPress={handleNext}
-            disabled={currentQuestionIndex === questions.length - 1}
-          >
-            <LinearGradient
-              colors={
-                currentQuestionIndex === questions.length - 1
-                  ? ["#e0e0e0", "#e0e0e0"]
-                  : ["#007AFF", "#5856D6"]
-              }
-              style={styles.navButton}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            >
-              <Text
-                style={[
-                  styles.navButtonText,
-                  currentQuestionIndex === questions.length - 1 &&
-                    styles.navButtonTextDisabled,
-                ]}
-              >
-                Câu sau ›
-              </Text>
-            </LinearGradient>
-          </PressableScale>
+              {getCategoryDisplayName(category)}
+            </Text>
+            <Text style={[styles.headerSubtitle, { color: colors.subText }]}>
+              Câu {currentQuestionIndex + 1}/{questions.length}
+            </Text>
+          </View>
+          <View style={{ width: 80 }} />
         </View>
 
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.questionDotsContainer}
-          contentContainerStyle={styles.questionDotsContent}
-        >
-          {questions.map((q, index) => {
-            const isAnswered = selectedAnswers.get(q._id.$oid) !== undefined;
-            const isCurrent = index === currentQuestionIndex;
-
-            return (
-              <PressableScale
-                key={q._id.$oid}
-                scale={0.9}
-                onPress={() => handleQuestionNavigate(index)}
-              >
-                <LinearGradient
-                  colors={
-                    isCurrent
-                      ? ["#007AFF", "#5856D6"]
-                      : isAnswered
-                      ? ["#34C759", "#28a745"]
-                      : isDarkMode
-                      ? [colors.card, colors.background]
-                      : ["#f0f0f0", "#e0e0e0"]
-                  }
-                  style={styles.questionDot}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                >
-                  <Text
-                    style={[
-                      styles.questionDotText,
-                      {
-                        color:
-                          isAnswered || isCurrent
-                            ? "#fff"
-                            : isDarkMode
-                            ? colors.text
-                            : "#666",
-                      },
-                    ]}
-                  >
-                    {index + 1}
-                  </Text>
-                </LinearGradient>
-              </PressableScale>
-            );
-          })}
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          {renderCurrentQuestion()}
         </ScrollView>
-      </View>
-    </SafeAreaView>
+
+        {/* Navigation */}
+        <View
+          style={[
+            styles.navigation,
+            { backgroundColor: colors.card, borderTopColor: colors.border },
+          ]}
+        >
+          <View style={styles.navigationButtons}>
+            <PressableScale
+              style={[
+                styles.navButtonWrapper,
+                currentQuestionIndex === 0 && styles.navButtonDisabled,
+              ]}
+              onPress={handlePrevious}
+              disabled={currentQuestionIndex === 0}
+            >
+              <LinearGradient
+                colors={
+                  currentQuestionIndex === 0
+                    ? ["#e0e0e0", "#e0e0e0"]
+                    : ["#007AFF", "#5856D6"]
+                }
+                style={styles.navButton}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+              >
+                <Text
+                  style={[
+                    styles.navButtonText,
+                    currentQuestionIndex === 0 && styles.navButtonTextDisabled,
+                  ]}
+                >
+                  ‹ Câu trước
+                </Text>
+              </LinearGradient>
+            </PressableScale>
+
+            <PressableScale
+              style={[
+                styles.navButtonWrapper,
+                currentQuestionIndex === questions.length - 1 &&
+                  styles.navButtonDisabled,
+              ]}
+              onPress={handleNext}
+              disabled={currentQuestionIndex === questions.length - 1}
+            >
+              <LinearGradient
+                colors={
+                  currentQuestionIndex === questions.length - 1
+                    ? ["#e0e0e0", "#e0e0e0"]
+                    : ["#007AFF", "#5856D6"]
+                }
+                style={styles.navButton}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+              >
+                <Text
+                  style={[
+                    styles.navButtonText,
+                    currentQuestionIndex === questions.length - 1 &&
+                      styles.navButtonTextDisabled,
+                  ]}
+                >
+                  Câu sau ›
+                </Text>
+              </LinearGradient>
+            </PressableScale>
+          </View>
+
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.questionDotsContainer}
+            contentContainerStyle={styles.questionDotsContent}
+          >
+            {questions.map((q, index) => {
+              const isAnswered = selectedAnswers.get(q._id.$oid) !== undefined;
+              const isCurrent = index === currentQuestionIndex;
+
+              return (
+                <PressableScale
+                  key={q._id.$oid}
+                  scale={0.9}
+                  onPress={() => handleQuestionNavigate(index)}
+                >
+                  <LinearGradient
+                    colors={
+                      isCurrent
+                        ? ["#007AFF", "#5856D6"]
+                        : isAnswered
+                        ? ["#34C759", "#28a745"]
+                        : isDarkMode
+                        ? [colors.card, colors.background]
+                        : ["#f0f0f0", "#e0e0e0"]
+                    }
+                    style={styles.questionDot}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                  >
+                    <Text
+                      style={[
+                        styles.questionDotText,
+                        {
+                          color:
+                            isAnswered || isCurrent
+                              ? "#fff"
+                              : isDarkMode
+                              ? colors.text
+                              : "#666",
+                        },
+                      ]}
+                    >
+                      {index + 1}
+                    </Text>
+                  </LinearGradient>
+                </PressableScale>
+              );
+            })}
+          </ScrollView>
+        </View>
+      </SafeAreaView>
+    </TouchableScreenWrapper>
   );
 }
 

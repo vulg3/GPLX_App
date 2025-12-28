@@ -11,7 +11,11 @@ import {
   View,
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import { AnimatedCard, PressableScale } from "../components";
+import {
+  AnimatedCard,
+  PressableScale,
+  TouchableScreenWrapper,
+} from "../components";
 import { ExamResult } from "../types/Question";
 
 const { width } = Dimensions.get("window");
@@ -26,200 +30,204 @@ export default function ReviewAnswers() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <LinearGradient colors={["#fff", "#f8f9fa"]} style={styles.header}>
-        <PressableScale
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Text style={styles.backButtonText}>‹ Quay lại</Text>
-        </PressableScale>
-        <Text style={styles.headerTitle}>Xem đáp án chi tiết</Text>
-        <View style={{ width: 80 }} />
-      </LinearGradient>
+    <TouchableScreenWrapper>
+      <SafeAreaView style={styles.container}>
+        <LinearGradient colors={["#fff", "#f8f9fa"]} style={styles.header}>
+          <PressableScale
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
+            <Text style={styles.backButtonText}>‹ Quay lại</Text>
+          </PressableScale>
+          <Text style={styles.headerTitle}>Xem đáp án chi tiết</Text>
+          <View style={{ width: 80 }} />
+        </LinearGradient>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <AnimatedCard delay={100} style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>📊 Tổng quan</Text>
-          <View style={styles.summaryRow}>
-            <Animated.View
-              entering={FadeInDown.delay(200).springify()}
-              style={styles.summaryItem}
-            >
-              <LinearGradient
-                colors={["#34C759", "#28a745"]}
-                style={styles.summaryIconBg}
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          <AnimatedCard delay={100} style={styles.summaryCard}>
+            <Text style={styles.summaryTitle}>📊 Tổng quan</Text>
+            <View style={styles.summaryRow}>
+              <Animated.View
+                entering={FadeInDown.delay(200).springify()}
+                style={styles.summaryItem}
               >
-                <Text style={styles.summaryIcon}>✓</Text>
-              </LinearGradient>
-              <Text style={[styles.summaryValue, { color: "#34C759" }]}>
-                {examResult.answers.filter((a) => a.isCorrect).length}
-              </Text>
-              <Text style={styles.summaryLabel}>Đúng</Text>
-            </Animated.View>
-            <Animated.View
-              entering={FadeInDown.delay(300).springify()}
-              style={styles.summaryItem}
-            >
-              <LinearGradient
-                colors={["#FF3B30", "#dc2626"]}
-                style={styles.summaryIconBg}
+                <LinearGradient
+                  colors={["#34C759", "#28a745"]}
+                  style={styles.summaryIconBg}
+                >
+                  <Text style={styles.summaryIcon}>✓</Text>
+                </LinearGradient>
+                <Text style={[styles.summaryValue, { color: "#34C759" }]}>
+                  {examResult.answers.filter((a) => a.isCorrect).length}
+                </Text>
+                <Text style={styles.summaryLabel}>Đúng</Text>
+              </Animated.View>
+              <Animated.View
+                entering={FadeInDown.delay(300).springify()}
+                style={styles.summaryItem}
               >
-                <Text style={styles.summaryIcon}>✗</Text>
-              </LinearGradient>
-              <Text style={[styles.summaryValue, { color: "#FF3B30" }]}>
-                {examResult.answers.filter((a) => !a.isCorrect).length}
-              </Text>
-              <Text style={styles.summaryLabel}>Sai</Text>
-            </Animated.View>
-            <Animated.View
-              entering={FadeInDown.delay(400).springify()}
-              style={styles.summaryItem}
-            >
-              <LinearGradient
-                colors={["#007AFF", "#5856D6"]}
-                style={styles.summaryIconBg}
+                <LinearGradient
+                  colors={["#FF3B30", "#dc2626"]}
+                  style={styles.summaryIconBg}
+                >
+                  <Text style={styles.summaryIcon}>✗</Text>
+                </LinearGradient>
+                <Text style={[styles.summaryValue, { color: "#FF3B30" }]}>
+                  {examResult.answers.filter((a) => !a.isCorrect).length}
+                </Text>
+                <Text style={styles.summaryLabel}>Sai</Text>
+              </Animated.View>
+              <Animated.View
+                entering={FadeInDown.delay(400).springify()}
+                style={styles.summaryItem}
               >
-                <Text style={styles.summaryIcon}>📊</Text>
-              </LinearGradient>
-              <Text style={styles.summaryValue}>{examResult.score}</Text>
-              <Text style={styles.summaryLabel}>Điểm</Text>
-            </Animated.View>
-          </View>
-        </AnimatedCard>
+                <LinearGradient
+                  colors={["#007AFF", "#5856D6"]}
+                  style={styles.summaryIconBg}
+                >
+                  <Text style={styles.summaryIcon}>📊</Text>
+                </LinearGradient>
+                <Text style={styles.summaryValue}>{examResult.score}</Text>
+                <Text style={styles.summaryLabel}>Điểm</Text>
+              </Animated.View>
+            </View>
+          </AnimatedCard>
 
-        {examResult.questions.map((question, index) => {
-          const userAnswer = getUserAnswer(question._id.$oid);
-          const isCorrect = userAnswer?.isCorrect || false;
-          const userSelectedIndex = userAnswer?.selectedAnswerIndex;
-          const correctAnswerIndex = question.answers.findIndex(
-            (a) => a.correct
-          );
-          const isDiemLiet = question.category.includes("diem-liet");
+          {examResult.questions.map((question, index) => {
+            const userAnswer = getUserAnswer(question._id.$oid);
+            const isCorrect = userAnswer?.isCorrect || false;
+            const userSelectedIndex = userAnswer?.selectedAnswerIndex;
+            const correctAnswerIndex = question.answers.findIndex(
+              (a) => a.correct
+            );
+            const isDiemLiet = question.category.includes("diem-liet");
 
-          return (
-            <AnimatedCard
-              key={question._id.$oid}
-              delay={200 + index * 50}
-              style={[
-                styles.questionCard,
-                isCorrect
-                  ? styles.questionCardCorrect
-                  : styles.questionCardWrong,
-              ]}
-            >
-              {/* Question Header */}
-              <View style={styles.questionHeader}>
-                <View style={styles.questionLeft}>
-                  <View
-                    style={[
-                      styles.questionStatus,
-                      isCorrect
-                        ? styles.questionStatusCorrect
-                        : styles.questionStatusWrong,
-                    ]}
-                  >
-                    <Text style={styles.questionStatusText}>
-                      {isCorrect ? "✓" : "✗"}
-                    </Text>
-                  </View>
-                  <View>
-                    <Text style={styles.questionNumber}>Câu {index + 1}</Text>
-                    {isDiemLiet && (
-                      <View style={styles.criticalBadge}>
-                        <Text style={styles.criticalBadgeText}>Điểm liệt</Text>
-                      </View>
-                    )}
-                  </View>
-                </View>
-              </View>
-
-              {/* Question Text */}
-              <Text style={styles.questionText}>{question.question}</Text>
-
-              {/* Question Image */}
-              {question.hinhanhq && (
-                <Image
-                  source={{
-                    uri: `https://600cauhoigplx.com${question.hinhanhq}`,
-                  }}
-                  style={styles.questionImage}
-                  resizeMode="contain"
-                />
-              )}
-
-              {/* Answers */}
-              <View style={styles.answersContainer}>
-                {question.answers.map((answer, answerIndex) => {
-                  const isUserSelected = userSelectedIndex === answerIndex;
-                  const isCorrectAnswer = answerIndex === correctAnswerIndex;
-
-                  return (
+            return (
+              <AnimatedCard
+                key={question._id.$oid}
+                delay={200 + index * 50}
+                style={[
+                  styles.questionCard,
+                  isCorrect
+                    ? styles.questionCardCorrect
+                    : styles.questionCardWrong,
+                ]}
+              >
+                {/* Question Header */}
+                <View style={styles.questionHeader}>
+                  <View style={styles.questionLeft}>
                     <View
-                      key={answerIndex}
                       style={[
-                        styles.answerItem,
-                        isCorrectAnswer && styles.answerItemCorrect,
-                        isUserSelected &&
-                          !isCorrectAnswer &&
-                          styles.answerItemWrong,
+                        styles.questionStatus,
+                        isCorrect
+                          ? styles.questionStatusCorrect
+                          : styles.questionStatusWrong,
                       ]}
                     >
-                      <View style={styles.answerLeft}>
-                        <View
-                          style={[
-                            styles.answerIndicator,
-                            isCorrectAnswer && styles.answerIndicatorCorrect,
-                            isUserSelected &&
-                              !isCorrectAnswer &&
-                              styles.answerIndicatorWrong,
-                          ]}
-                        >
-                          {isCorrectAnswer && (
-                            <Text style={styles.answerCheckmark}>✓</Text>
-                          )}
-                          {isUserSelected && !isCorrectAnswer && (
-                            <Text style={styles.answerCross}>✗</Text>
-                          )}
-                        </View>
-                        <Text
-                          style={[
-                            styles.answerText,
-                            isCorrectAnswer && styles.answerTextCorrect,
-                            isUserSelected &&
-                              !isCorrectAnswer &&
-                              styles.answerTextWrong,
-                          ]}
-                        >
-                          {answer.text}
-                        </Text>
-                      </View>
-                      {isUserSelected && (
-                        <View style={styles.answerBadge}>
-                          <Text style={styles.answerBadgeText}>Bạn chọn</Text>
+                      <Text style={styles.questionStatusText}>
+                        {isCorrect ? "✓" : "✗"}
+                      </Text>
+                    </View>
+                    <View>
+                      <Text style={styles.questionNumber}>Câu {index + 1}</Text>
+                      {isDiemLiet && (
+                        <View style={styles.criticalBadge}>
+                          <Text style={styles.criticalBadgeText}>
+                            Điểm liệt
+                          </Text>
                         </View>
                       )}
                     </View>
-                  );
-                })}
-              </View>
-
-              {/* Explanation */}
-              {question.explanation && (
-                <View style={styles.explanationContainer}>
-                  <Text style={styles.explanationTitle}>💡 Giải thích:</Text>
-                  <Text style={styles.explanationText}>
-                    {question.explanation}
-                  </Text>
+                  </View>
                 </View>
-              )}
-            </AnimatedCard>
-          );
-        })}
 
-        <View style={{ height: 20 }} />
-      </ScrollView>
-    </SafeAreaView>
+                {/* Question Text */}
+                <Text style={styles.questionText}>{question.question}</Text>
+
+                {/* Question Image */}
+                {question.hinhanhq && (
+                  <Image
+                    source={{
+                      uri: `https://600cauhoigplx.com${question.hinhanhq}`,
+                    }}
+                    style={styles.questionImage}
+                    resizeMode="contain"
+                  />
+                )}
+
+                {/* Answers */}
+                <View style={styles.answersContainer}>
+                  {question.answers.map((answer, answerIndex) => {
+                    const isUserSelected = userSelectedIndex === answerIndex;
+                    const isCorrectAnswer = answerIndex === correctAnswerIndex;
+
+                    return (
+                      <View
+                        key={answerIndex}
+                        style={[
+                          styles.answerItem,
+                          isCorrectAnswer && styles.answerItemCorrect,
+                          isUserSelected &&
+                            !isCorrectAnswer &&
+                            styles.answerItemWrong,
+                        ]}
+                      >
+                        <View style={styles.answerLeft}>
+                          <View
+                            style={[
+                              styles.answerIndicator,
+                              isCorrectAnswer && styles.answerIndicatorCorrect,
+                              isUserSelected &&
+                                !isCorrectAnswer &&
+                                styles.answerIndicatorWrong,
+                            ]}
+                          >
+                            {isCorrectAnswer && (
+                              <Text style={styles.answerCheckmark}>✓</Text>
+                            )}
+                            {isUserSelected && !isCorrectAnswer && (
+                              <Text style={styles.answerCross}>✗</Text>
+                            )}
+                          </View>
+                          <Text
+                            style={[
+                              styles.answerText,
+                              isCorrectAnswer && styles.answerTextCorrect,
+                              isUserSelected &&
+                                !isCorrectAnswer &&
+                                styles.answerTextWrong,
+                            ]}
+                          >
+                            {answer.text}
+                          </Text>
+                        </View>
+                        {isUserSelected && (
+                          <View style={styles.answerBadge}>
+                            <Text style={styles.answerBadgeText}>Bạn chọn</Text>
+                          </View>
+                        )}
+                      </View>
+                    );
+                  })}
+                </View>
+
+                {/* Explanation */}
+                {question.explanation && (
+                  <View style={styles.explanationContainer}>
+                    <Text style={styles.explanationTitle}>💡 Giải thích:</Text>
+                    <Text style={styles.explanationText}>
+                      {question.explanation}
+                    </Text>
+                  </View>
+                )}
+              </AnimatedCard>
+            );
+          })}
+
+          <View style={{ height: 20 }} />
+        </ScrollView>
+      </SafeAreaView>
+    </TouchableScreenWrapper>
   );
 }
 

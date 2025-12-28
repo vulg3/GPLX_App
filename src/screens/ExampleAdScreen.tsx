@@ -13,7 +13,6 @@ export default function ExampleAdScreen({ navigation }: any) {
 
   const handleShowAd = async () => {
     await showAd(() => {
-      console.log("Ad closed, continuing with next action");
       // You can navigate or perform any action after the ad is closed
       // navigation.navigate('NextScreen');
     });

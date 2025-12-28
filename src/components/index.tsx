@@ -7,4 +7,5 @@ export { default as GradientBackground } from "./GradientBackground";
 export { default as LoadingSpinner } from "./LoadingSpinner";
 export { default as PressableScale } from "./PressableScale";
 export { default as ResponsiveContainer } from "./ResponsiveContainer";
+export { TouchableScreenWrapper } from "./TouchableScreenWrapper";
 export { default as Wrapper } from "./Wrapper";

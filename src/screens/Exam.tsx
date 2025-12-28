@@ -21,6 +21,7 @@ import {
   AnimatedProgressBar,
   LoadingSpinner,
   PressableScale,
+  TouchableScreenWrapper,
 } from "../components";
 import { ExamResult, LicenseType, Question } from "../types/Question";
 import { calculateScore, generateExam } from "../utils/examGenerator";
@@ -39,13 +40,15 @@ export default function Exam() {
   const [examQuestions, setExamQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<string, number>>({});
-  const [timeRemaining, setTimeRemaining] = useState(19 * 60); // 19 phút
+  // License A (Motorbike): 19 minutes, License B (Car): 20 minutes
+  const examDuration = licenseType === "B" ? 20 * 60 : 19 * 60;
+  const [timeRemaining, setTimeRemaining] = useState(examDuration);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // Tạo đề thi 25 câu
-    const exam = generateExam(allQuestions);
+    // Generate exam: 25 questions for Motorbike (A), 30 questions for Car (B)
+    const exam = generateExam(allQuestions, licenseType);
     setExamQuestions(exam);
 
     // Start timer
@@ -123,7 +126,7 @@ export default function Exam() {
       clearInterval(timerRef.current);
     }
 
-    const result = calculateScore(examQuestions, userAnswers);
+    const result = calculateScore(examQuestions, userAnswers, licenseType);
 
     const examResult: ExamResult = {
       id: Date.now().toString(),
@@ -195,318 +198,325 @@ export default function Exam() {
   const progress = (answeredCount / examQuestions.length) * 100;
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <LinearGradient colors={["#fff", "#f8f9fa"]} style={styles.header}>
-        <View style={styles.headerTop}>
-          <PressableScale
-            onPress={() => {
-              Alert.alert(
-                "Thoát bài thi",
-                "Bạn có chắc muốn thoát? Bài thi sẽ không được lưu.",
-                [
-                  { text: "Tiếp tục làm", style: "cancel" },
-                  {
-                    text: "Thoát",
-                    onPress: () => {
-                      if (timerRef.current) clearInterval(timerRef.current);
-                      navigation.goBack();
+    <TouchableScreenWrapper>
+      <SafeAreaView style={styles.container}>
+        {/* Header */}
+        <LinearGradient colors={["#fff", "#f8f9fa"]} style={styles.header}>
+          <View style={styles.headerTop}>
+            <PressableScale
+              onPress={() => {
+                Alert.alert(
+                  "Thoát bài thi",
+                  "Bạn có chắc muốn thoát? Bài thi sẽ không được lưu.",
+                  [
+                    { text: "Tiếp tục làm", style: "cancel" },
+                    {
+                      text: "Thoát",
+                      onPress: () => {
+                        if (timerRef.current) clearInterval(timerRef.current);
+                        navigation.goBack();
+                      },
+                      style: "destructive",
                     },
-                    style: "destructive",
-                  },
-                ]
-              );
-            }}
-            style={styles.exitButtonContainer}
-          >
-            <Text style={styles.exitButton}>✕</Text>
-          </PressableScale>
-
-          <Animated.View style={styles.timerContainer}>
-            <LinearGradient
-              colors={
-                timeRemaining < 60
-                  ? ["#FF3B30", "#dc2626"]
-                  : ["#007AFF", "#5856D6"]
-              }
-              style={styles.timerGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            >
-              <Text style={styles.timerIcon}>⏱</Text>
-              <Text style={styles.timerText}>{formatTime(timeRemaining)}</Text>
-            </LinearGradient>
-          </Animated.View>
-
-          <PressableScale
-            onPress={handleSubmitConfirm}
-            style={styles.submitButtonContainer}
-          >
-            <LinearGradient
-              colors={["#34C759", "#28a745"]}
-              style={styles.submitButton}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            >
-              <Text style={styles.submitButtonText}>Nộp bài</Text>
-            </LinearGradient>
-          </PressableScale>
-        </View>
-
-        <View style={styles.progressContainer}>
-          <AnimatedProgressBar
-            progress={progress}
-            color="#34C759"
-            showLabel={false}
-          />
-          <Text style={styles.progressText}>
-            {answeredCount}/{examQuestions.length}
-          </Text>
-        </View>
-      </LinearGradient>
-
-      {/* Question Content */}
-      <ScrollView style={styles.content}>
-        <View style={styles.questionContainer}>
-          <View style={styles.questionHeader}>
-            <Text style={styles.questionNumber}>
-              Câu {currentQuestionIndex + 1}/{examQuestions.length}
-            </Text>
-            {isDiemLiet && (
-              <View style={styles.criticalBadge}>
-                <Text style={styles.criticalBadgeText}>⚠️ Điểm liệt</Text>
-              </View>
-            )}
-          </View>
-
-          <Text style={styles.questionText}>{currentQuestion.question}</Text>
-
-          {currentQuestion.hinhanhq && (
-            <Image
-              source={{
-                uri: `https://taplai.com/${currentQuestion.hinhanhq}`,
+                  ]
+                );
               }}
-              style={styles.questionImage}
-              resizeMode="contain"
-            />
-          )}
+              style={styles.exitButtonContainer}
+            >
+              <Text style={styles.exitButton}>✕</Text>
+            </PressableScale>
 
-          <View style={styles.answersContainer}>
-            {currentQuestion.answers.map((answer, index) => {
-              const isSelected = selectedAnswer === index;
-              return (
-                <Animated.View
-                  key={index}
-                  entering={FadeInUp.delay(index * 100).springify()}
-                >
-                  <PressableScale
-                    style={[
-                      styles.answerButton,
-                      isSelected && styles.answerButtonSelected,
-                    ]}
-                    onPress={() => handleAnswerSelect(index)}
-                  >
-                    {isSelected && (
-                      <LinearGradient
-                        colors={["#007AFF15", "#007AFF05"]}
-                        style={StyleSheet.absoluteFill}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                      />
-                    )}
-                    <View
-                      style={[
-                        styles.answerIndicator,
-                        isSelected && styles.answerIndicatorSelected,
-                      ]}
-                    >
-                      {isSelected && (
-                        <Animated.View
-                          entering={ZoomIn.springify()}
-                          style={styles.answerIndicatorDot}
-                        />
-                      )}
-                    </View>
-                    <Text
-                      style={[
-                        styles.answerText,
-                        isSelected && styles.answerTextSelected,
-                      ]}
-                    >
-                      {answer.text}
-                    </Text>
-                  </PressableScale>
-                </Animated.View>
-              );
-            })}
+            <Animated.View style={styles.timerContainer}>
+              <LinearGradient
+                colors={
+                  timeRemaining < 60
+                    ? ["#FF3B30", "#dc2626"]
+                    : ["#007AFF", "#5856D6"]
+                }
+                style={styles.timerGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+              >
+                <Text style={styles.timerIcon}>⏱</Text>
+                <Text style={styles.timerText}>
+                  {formatTime(timeRemaining)}
+                </Text>
+              </LinearGradient>
+            </Animated.View>
+
+            <PressableScale
+              onPress={handleSubmitConfirm}
+              style={styles.submitButtonContainer}
+            >
+              <LinearGradient
+                colors={["#34C759", "#28a745"]}
+                style={styles.submitButton}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+              >
+                <Text style={styles.submitButtonText}>Nộp bài</Text>
+              </LinearGradient>
+            </PressableScale>
           </View>
-        </View>
-      </ScrollView>
 
-      {/* Navigation */}
-      <View style={styles.navigation}>
-        <View style={styles.navigationButtons}>
-          <PressableScale
-            style={[
-              styles.navButtonWrapper,
-              currentQuestionIndex === 0 && styles.navButtonDisabled,
-            ]}
-            onPress={handlePrevious}
-            disabled={currentQuestionIndex === 0}
-          >
-            <LinearGradient
-              colors={
-                currentQuestionIndex === 0
-                  ? ["#e0e0e0", "#e0e0e0"]
-                  : ["#007AFF", "#5856D6"]
-              }
-              style={styles.navButton}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            >
-              <Text
-                style={[
-                  styles.navButtonText,
-                  currentQuestionIndex === 0 && styles.navButtonTextDisabled,
-                ]}
-              >
-                ‹ Câu trước
+          <View style={styles.progressContainer}>
+            <AnimatedProgressBar
+              progress={progress}
+              color="#34C759"
+              showLabel={false}
+            />
+            <Text style={styles.progressText}>
+              {answeredCount}/{examQuestions.length}
+            </Text>
+          </View>
+        </LinearGradient>
+
+        {/* Question Content */}
+        <ScrollView style={styles.content}>
+          <View style={styles.questionContainer}>
+            <View style={styles.questionHeader}>
+              <Text style={styles.questionNumber}>
+                Câu {currentQuestionIndex + 1}/{examQuestions.length}
               </Text>
-            </LinearGradient>
-          </PressableScale>
+              {isDiemLiet && (
+                <View style={styles.criticalBadge}>
+                  <Text style={styles.criticalBadgeText}>⚠️ Điểm liệt</Text>
+                </View>
+              )}
+            </View>
 
-          <PressableScale
-            style={[
-              styles.navButtonWrapper,
-              currentQuestionIndex === examQuestions.length - 1 &&
-                styles.navButtonDisabled,
-            ]}
-            onPress={handleNext}
-            disabled={currentQuestionIndex === examQuestions.length - 1}
-          >
-            <LinearGradient
-              colors={
-                currentQuestionIndex === examQuestions.length - 1
-                  ? ["#e0e0e0", "#e0e0e0"]
-                  : ["#007AFF", "#5856D6"]
-              }
-              style={styles.navButton}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            >
-              <Text
-                style={[
-                  styles.navButtonText,
-                  currentQuestionIndex === examQuestions.length - 1 &&
-                    styles.navButtonTextDisabled,
-                ]}
-              >
-                Câu sau ›
-              </Text>
-            </LinearGradient>
-          </PressableScale>
-        </View>
+            <Text style={styles.questionText}>{currentQuestion.question}</Text>
 
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.questionDotsContainer}
-          contentContainerStyle={styles.questionDotsContent}
-        >
-          {examQuestions.map((q, index) => {
-            const isAnswered = userAnswers[q._id.$oid] !== undefined;
-            const isCurrent = index === currentQuestionIndex;
+            {currentQuestion.hinhanhq && (
+              <Image
+                source={{
+                  uri: `https://taplai.com/${currentQuestion.hinhanhq}`,
+                }}
+                style={styles.questionImage}
+                resizeMode="contain"
+              />
+            )}
 
-            return (
-              <PressableScale
-                key={q._id.$oid}
-                scale={0.9}
-                onPress={() => handleQuestionNavigate(index)}
-              >
-                <LinearGradient
-                  colors={
-                    isCurrent
-                      ? ["#007AFF", "#5856D6"]
-                      : isAnswered
-                      ? ["#34C759", "#28a745"]
-                      : ["#f0f0f0", "#e0e0e0"]
-                  }
-                  style={styles.questionDot}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                >
-                  <Text
-                    style={[
-                      styles.questionDotText,
-                      (isAnswered || isCurrent) && styles.questionDotTextActive,
-                    ]}
-                  >
-                    {index + 1}
-                  </Text>
-                </LinearGradient>
-              </PressableScale>
-            );
-          })}
-        </ScrollView>
-      </View>
-
-      {/* Submit Confirmation Modal */}
-      <Modal
-        visible={showSubmitModal}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowSubmitModal(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <Animated.View
-            entering={FadeInDown.springify()}
-            style={styles.modalContent}
-          >
-            <LinearGradient
-              colors={["#fff", "#f8f9fa"]}
-              style={styles.modalGradient}
-            >
-              <View style={styles.modalIconContainer}>
-                <Text style={styles.modalIcon}>📋</Text>
-              </View>
-              <Text style={styles.modalTitle}>Xác nhận nộp bài</Text>
-              <Text style={styles.modalText}>
-                Bạn đã trả lời {answeredCount}/{examQuestions.length} câu hỏi.
-              </Text>
-              <Text style={styles.modalText}>
-                Bạn có chắc muốn nộp bài không?
-              </Text>
-              <View style={styles.modalButtons}>
-                <PressableScale
-                  style={[styles.modalButton, styles.modalButtonCancel]}
-                  onPress={() => setShowSubmitModal(false)}
-                >
-                  <Text style={styles.modalButtonTextCancel}>Hủy</Text>
-                </PressableScale>
-                <PressableScale style={styles.modalButton}>
-                  <LinearGradient
-                    colors={["#007AFF", "#5856D6"]}
-                    style={styles.modalButtonConfirm}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
+            <View style={styles.answersContainer}>
+              {currentQuestion.answers.map((answer, index) => {
+                const isSelected = selectedAnswer === index;
+                return (
+                  <Animated.View
+                    key={index}
+                    entering={FadeInUp.delay(index * 100).springify()}
                   >
                     <PressableScale
-                      onPress={() => {
-                        setShowSubmitModal(false);
-                        handleSubmit(false);
-                      }}
-                      style={styles.modalButtonInner}
+                      style={[
+                        styles.answerButton,
+                        isSelected && styles.answerButtonSelected,
+                      ]}
+                      onPress={() => handleAnswerSelect(index)}
                     >
-                      <Text style={styles.modalButtonTextConfirm}>Nộp bài</Text>
+                      {isSelected && (
+                        <LinearGradient
+                          colors={["#007AFF15", "#007AFF05"]}
+                          style={StyleSheet.absoluteFill}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 1 }}
+                        />
+                      )}
+                      <View
+                        style={[
+                          styles.answerIndicator,
+                          isSelected && styles.answerIndicatorSelected,
+                        ]}
+                      >
+                        {isSelected && (
+                          <Animated.View
+                            entering={ZoomIn.springify()}
+                            style={styles.answerIndicatorDot}
+                          />
+                        )}
+                      </View>
+                      <Text
+                        style={[
+                          styles.answerText,
+                          isSelected && styles.answerTextSelected,
+                        ]}
+                      >
+                        {answer.text}
+                      </Text>
                     </PressableScale>
+                  </Animated.View>
+                );
+              })}
+            </View>
+          </View>
+        </ScrollView>
+
+        {/* Navigation */}
+        <View style={styles.navigation}>
+          <View style={styles.navigationButtons}>
+            <PressableScale
+              style={[
+                styles.navButtonWrapper,
+                currentQuestionIndex === 0 && styles.navButtonDisabled,
+              ]}
+              onPress={handlePrevious}
+              disabled={currentQuestionIndex === 0}
+            >
+              <LinearGradient
+                colors={
+                  currentQuestionIndex === 0
+                    ? ["#e0e0e0", "#e0e0e0"]
+                    : ["#007AFF", "#5856D6"]
+                }
+                style={styles.navButton}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+              >
+                <Text
+                  style={[
+                    styles.navButtonText,
+                    currentQuestionIndex === 0 && styles.navButtonTextDisabled,
+                  ]}
+                >
+                  ‹ Câu trước
+                </Text>
+              </LinearGradient>
+            </PressableScale>
+
+            <PressableScale
+              style={[
+                styles.navButtonWrapper,
+                currentQuestionIndex === examQuestions.length - 1 &&
+                  styles.navButtonDisabled,
+              ]}
+              onPress={handleNext}
+              disabled={currentQuestionIndex === examQuestions.length - 1}
+            >
+              <LinearGradient
+                colors={
+                  currentQuestionIndex === examQuestions.length - 1
+                    ? ["#e0e0e0", "#e0e0e0"]
+                    : ["#007AFF", "#5856D6"]
+                }
+                style={styles.navButton}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+              >
+                <Text
+                  style={[
+                    styles.navButtonText,
+                    currentQuestionIndex === examQuestions.length - 1 &&
+                      styles.navButtonTextDisabled,
+                  ]}
+                >
+                  Câu sau ›
+                </Text>
+              </LinearGradient>
+            </PressableScale>
+          </View>
+
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.questionDotsContainer}
+            contentContainerStyle={styles.questionDotsContent}
+          >
+            {examQuestions.map((q, index) => {
+              const isAnswered = userAnswers[q._id.$oid] !== undefined;
+              const isCurrent = index === currentQuestionIndex;
+
+              return (
+                <PressableScale
+                  key={q._id.$oid}
+                  scale={0.9}
+                  onPress={() => handleQuestionNavigate(index)}
+                >
+                  <LinearGradient
+                    colors={
+                      isCurrent
+                        ? ["#007AFF", "#5856D6"]
+                        : isAnswered
+                        ? ["#34C759", "#28a745"]
+                        : ["#f0f0f0", "#e0e0e0"]
+                    }
+                    style={styles.questionDot}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                  >
+                    <Text
+                      style={[
+                        styles.questionDotText,
+                        (isAnswered || isCurrent) &&
+                          styles.questionDotTextActive,
+                      ]}
+                    >
+                      {index + 1}
+                    </Text>
                   </LinearGradient>
                 </PressableScale>
-              </View>
-            </LinearGradient>
-          </Animated.View>
+              );
+            })}
+          </ScrollView>
         </View>
-      </Modal>
-    </SafeAreaView>
+
+        {/* Submit Confirmation Modal */}
+        <Modal
+          visible={showSubmitModal}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setShowSubmitModal(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <Animated.View
+              entering={FadeInDown.springify()}
+              style={styles.modalContent}
+            >
+              <LinearGradient
+                colors={["#fff", "#f8f9fa"]}
+                style={styles.modalGradient}
+              >
+                <View style={styles.modalIconContainer}>
+                  <Text style={styles.modalIcon}>📋</Text>
+                </View>
+                <Text style={styles.modalTitle}>Xác nhận nộp bài</Text>
+                <Text style={styles.modalText}>
+                  Bạn đã trả lời {answeredCount}/{examQuestions.length} câu hỏi.
+                </Text>
+                <Text style={styles.modalText}>
+                  Bạn có chắc muốn nộp bài không?
+                </Text>
+                <View style={styles.modalButtons}>
+                  <PressableScale
+                    style={[styles.modalButton, styles.modalButtonCancel]}
+                    onPress={() => setShowSubmitModal(false)}
+                  >
+                    <Text style={styles.modalButtonTextCancel}>Hủy</Text>
+                  </PressableScale>
+                  <PressableScale style={styles.modalButton}>
+                    <LinearGradient
+                      colors={["#007AFF", "#5856D6"]}
+                      style={styles.modalButtonConfirm}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                    >
+                      <PressableScale
+                        onPress={() => {
+                          setShowSubmitModal(false);
+                          handleSubmit(false);
+                        }}
+                        style={styles.modalButtonInner}
+                      >
+                        <Text style={styles.modalButtonTextConfirm}>
+                          Nộp bài
+                        </Text>
+                      </PressableScale>
+                    </LinearGradient>
+                  </PressableScale>
+                </View>
+              </LinearGradient>
+            </Animated.View>
+          </View>
+        </Modal>
+      </SafeAreaView>
+    </TouchableScreenWrapper>
   );
 }
 

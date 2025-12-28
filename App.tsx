@@ -4,6 +4,7 @@ import TermsOfUse from "@/screens/TermsOfUse";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
+import { AdTouchProvider } from "./src/contexts/AdTouchContext";
 import { ThemeProvider } from "./src/contexts/ThemeContext";
 import MainTabs from "./src/navigation/MainTabs";
 import {
@@ -125,7 +126,9 @@ function AppNavigator() {
 export default function App() {
   return (
     <ThemeProvider>
-      <AppNavigator />
+      <AdTouchProvider>
+        <AppNavigator />
+      </AdTouchProvider>
     </ThemeProvider>
   );
 }

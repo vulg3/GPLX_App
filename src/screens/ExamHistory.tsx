@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
-import { PressableScale } from "../components";
+import { PressableScale, TouchableScreenWrapper } from "../components";
 import { useTheme } from "../contexts/ThemeContext";
 import { ExamResult, LicenseType } from "../types/Question";
 import { isTablet, responsive, rs, rv } from "../utils/responsive";
@@ -167,63 +167,65 @@ export default function ExamHistory() {
   };
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: colors.background }]}
-    >
-      <LinearGradient
-        colors={
-          isDarkMode ? [colors.card, colors.background] : ["#fff", "#f8f9fa"]
-        }
-        style={[styles.header, { borderBottomColor: colors.border }]}
+    <TouchableScreenWrapper>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
       >
-        <PressableScale
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
+        <LinearGradient
+          colors={
+            isDarkMode ? [colors.card, colors.background] : ["#fff", "#f8f9fa"]
+          }
+          style={[styles.header, { borderBottomColor: colors.border }]}
         >
-          <Text style={styles.backButtonText}>‹ Quay lại</Text>
-        </PressableScale>
-        <View style={styles.headerTitleContainer}>
-          <Text
-            style={[styles.headerTitle, { color: colors.text }]}
-            numberOfLines={1}
+          <PressableScale
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
           >
-            Lịch sử thi
-          </Text>
-          <Text style={[styles.headerSubtitle, { color: colors.subText }]}>
-            {results.length} bài thi
-          </Text>
-        </View>
-        <View style={styles.headerSpacer} />
-      </LinearGradient>
+            <Text style={styles.backButtonText}>‹ Quay lại</Text>
+          </PressableScale>
+          <View style={styles.headerTitleContainer}>
+            <Text
+              style={[styles.headerTitle, { color: colors.text }]}
+              numberOfLines={1}
+            >
+              Lịch sử thi
+            </Text>
+            <Text style={[styles.headerSubtitle, { color: colors.subText }]}>
+              {results.length} bài thi
+            </Text>
+          </View>
+          <View style={styles.headerSpacer} />
+        </LinearGradient>
 
-      {results.length === 0 ? (
-        <Animated.View
-          entering={FadeInDown.duration(800).springify()}
-          style={styles.emptyContainer}
-        >
-          <LinearGradient
-            colors={["#667eea20", "#764ba220"]}
-            style={styles.emptyIconContainer}
+        {results.length === 0 ? (
+          <Animated.View
+            entering={FadeInDown.duration(800).springify()}
+            style={styles.emptyContainer}
           >
-            <Text style={styles.emptyIcon}>📝</Text>
-          </LinearGradient>
-          <Text style={[styles.emptyTitle, { color: colors.text }]}>
-            Chưa có lịch sử thi
-          </Text>
-          <Text style={[styles.emptyText, { color: colors.subText }]}>
-            Bắt đầu làm bài thi thử để xem kết quả tại đây
-          </Text>
-        </Animated.View>
-      ) : (
-        <FlatList
-          data={results}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.list}
-          showsVerticalScrollIndicator={false}
-        />
-      )}
-    </SafeAreaView>
+            <LinearGradient
+              colors={["#667eea20", "#764ba220"]}
+              style={styles.emptyIconContainer}
+            >
+              <Text style={styles.emptyIcon}>📝</Text>
+            </LinearGradient>
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>
+              Chưa có lịch sử thi
+            </Text>
+            <Text style={[styles.emptyText, { color: colors.subText }]}>
+              Bắt đầu làm bài thi thử để xem kết quả tại đây
+            </Text>
+          </Animated.View>
+        ) : (
+          <FlatList
+            data={results}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.list}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
+      </SafeAreaView>
+    </TouchableScreenWrapper>
   );
 }
 

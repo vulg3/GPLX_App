@@ -21,7 +21,11 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
-import { ConfettiEffect, PressableScale } from "../components";
+import {
+  ConfettiEffect,
+  PressableScale,
+  TouchableScreenWrapper,
+} from "../components";
 import { ExamResult as ExamResultType } from "../types/Question";
 
 const { width } = Dimensions.get("window");
@@ -87,222 +91,226 @@ export default function ExamResult() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {showConfetti && examResult.passed && <ConfettiEffect />}
+    <TouchableScreenWrapper>
+      <SafeAreaView style={styles.container}>
+        {showConfetti && examResult.passed && <ConfettiEffect />}
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Result Card */}
-        <Animated.View
-          entering={FadeInDown.duration(600).springify()}
-          style={styles.resultCard}
-        >
-          {examResult.passed ? (
-            <>
-              <Animated.View
-                entering={ZoomIn.delay(200).springify()}
-                style={[styles.passIcon, rotateStyle]}
-              >
-                <LinearGradient
-                  colors={["#34C759", "#28a745"]}
-                  style={styles.iconGradient}
-                >
-                  <Text style={styles.passIconText}>🎉</Text>
-                </LinearGradient>
-              </Animated.View>
-              <Animated.Text
-                entering={FadeInUp.delay(400)}
-                style={styles.resultTitle}
-              >
-                Chúc mừng!
-              </Animated.Text>
-              <Animated.Text
-                entering={FadeInUp.delay(500)}
-                style={styles.resultSubtitle}
-              >
-                Bạn đã đạt yêu cầu
-              </Animated.Text>
-            </>
-          ) : (
-            <>
-              <Animated.View
-                entering={ZoomIn.delay(200).springify()}
-                style={styles.failIcon}
-              >
-                <LinearGradient
-                  colors={["#FF3B30", "#dc2626"]}
-                  style={styles.iconGradient}
-                >
-                  <Text style={styles.failIconText}>😔</Text>
-                </LinearGradient>
-              </Animated.View>
-              <Animated.Text
-                entering={FadeInUp.delay(400)}
-                style={styles.resultTitle}
-              >
-                Chưa đạt
-              </Animated.Text>
-              <Animated.Text
-                entering={FadeInUp.delay(500)}
-                style={styles.resultSubtitle}
-              >
-                {hasCriticalError
-                  ? "Bạn đã sai câu điểm liệt"
-                  : "Cố gắng lần sau nhé!"}
-              </Animated.Text>
-            </>
-          )}
-
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          {/* Result Card */}
           <Animated.View
-            entering={ZoomIn.delay(600).springify()}
-            style={[styles.scoreContainer, scaleStyle]}
+            entering={FadeInDown.duration(600).springify()}
+            style={styles.resultCard}
           >
-            <Text
-              style={[
-                styles.score,
-                examResult.passed ? styles.scorePass : styles.scoreFail,
-              ]}
+            {examResult.passed ? (
+              <>
+                <Animated.View
+                  entering={ZoomIn.delay(200).springify()}
+                  style={[styles.passIcon, rotateStyle]}
+                >
+                  <LinearGradient
+                    colors={["#34C759", "#28a745"]}
+                    style={styles.iconGradient}
+                  >
+                    <Text style={styles.passIconText}>🎉</Text>
+                  </LinearGradient>
+                </Animated.View>
+                <Animated.Text
+                  entering={FadeInUp.delay(400)}
+                  style={styles.resultTitle}
+                >
+                  Chúc mừng!
+                </Animated.Text>
+                <Animated.Text
+                  entering={FadeInUp.delay(500)}
+                  style={styles.resultSubtitle}
+                >
+                  Bạn đã đạt yêu cầu
+                </Animated.Text>
+              </>
+            ) : (
+              <>
+                <Animated.View
+                  entering={ZoomIn.delay(200).springify()}
+                  style={styles.failIcon}
+                >
+                  <LinearGradient
+                    colors={["#FF3B30", "#dc2626"]}
+                    style={styles.iconGradient}
+                  >
+                    <Text style={styles.failIconText}>😔</Text>
+                  </LinearGradient>
+                </Animated.View>
+                <Animated.Text
+                  entering={FadeInUp.delay(400)}
+                  style={styles.resultTitle}
+                >
+                  Chưa đạt
+                </Animated.Text>
+                <Animated.Text
+                  entering={FadeInUp.delay(500)}
+                  style={styles.resultSubtitle}
+                >
+                  {hasCriticalError
+                    ? "Bạn đã sai câu điểm liệt"
+                    : "Cố gắng lần sau nhé!"}
+                </Animated.Text>
+              </>
+            )}
+
+            <Animated.View
+              entering={ZoomIn.delay(600).springify()}
+              style={[styles.scoreContainer, scaleStyle]}
             >
-              {examResult.score}
-            </Text>
-            <Text style={styles.scoreLabel}>điểm</Text>
+              <Text
+                style={[
+                  styles.score,
+                  examResult.passed ? styles.scorePass : styles.scoreFail,
+                ]}
+              >
+                {examResult.score}
+              </Text>
+              <Text style={styles.scoreLabel}>điểm</Text>
+            </Animated.View>
+
+            <View style={styles.statsRow}>
+              <View style={styles.statItem}>
+                <Text style={styles.statValue}>{correctCount}</Text>
+                <Text style={styles.statLabel}>Đúng</Text>
+              </View>
+              <View style={styles.statDivider} />
+              <View style={styles.statItem}>
+                <Text style={[styles.statValue, { color: "#FF3B30" }]}>
+                  {incorrectCount}
+                </Text>
+                <Text style={styles.statLabel}>Sai</Text>
+              </View>
+              <View style={styles.statDivider} />
+              <View style={styles.statItem}>
+                <Text style={styles.statValue}>
+                  {examResult.totalQuestions}
+                </Text>
+                <Text style={styles.statLabel}>Tổng</Text>
+              </View>
+            </View>
+
+            {hasCriticalError && (
+              <View style={styles.warningBox}>
+                <Text style={styles.warningIcon}>⚠️</Text>
+                <Text style={styles.warningText}>
+                  Bạn đã sai câu điểm liệt. Để đạt yêu cầu, bạn không được sai
+                  bất kỳ câu điểm liệt nào.
+                </Text>
+              </View>
+            )}
           </Animated.View>
 
-          <View style={styles.statsRow}>
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>{correctCount}</Text>
-              <Text style={styles.statLabel}>Đúng</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <Text style={[styles.statValue, { color: "#FF3B30" }]}>
-                {incorrectCount}
+          {/* Info Card */}
+          <View style={styles.infoCard}>
+            <View style={styles.infoItem}>
+              <Text style={styles.infoLabel}>Loại bằng</Text>
+              <Text style={styles.infoValue}>
+                {examResult.licenseType === "A" ? "A / A1" : "B / B1"}
               </Text>
-              <Text style={styles.statLabel}>Sai</Text>
             </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <Text style={styles.statValue}>{examResult.totalQuestions}</Text>
-              <Text style={styles.statLabel}>Tổng</Text>
+            <View style={styles.infoDivider} />
+            <View style={styles.infoItem}>
+              <Text style={styles.infoLabel}>Thời gian</Text>
+              <Text style={styles.infoValue}>
+                {new Date(examResult.date).toLocaleString("vi-VN")}
+              </Text>
             </View>
           </View>
 
-          {hasCriticalError && (
-            <View style={styles.warningBox}>
-              <Text style={styles.warningIcon}>⚠️</Text>
-              <Text style={styles.warningText}>
-                Bạn đã sai câu điểm liệt. Để đạt yêu cầu, bạn không được sai bất
-                kỳ câu điểm liệt nào.
-              </Text>
-            </View>
-          )}
-        </Animated.View>
-
-        {/* Info Card */}
-        <View style={styles.infoCard}>
-          <View style={styles.infoItem}>
-            <Text style={styles.infoLabel}>Loại bằng</Text>
-            <Text style={styles.infoValue}>
-              {examResult.licenseType === "A" ? "A / A1" : "B / B1"}
+          {/* Tips Card */}
+          <View style={styles.tipsCard}>
+            <Text style={styles.tipsTitle}>
+              {examResult.passed ? "✅ Điều cần biết" : "💪 Lời khuyên"}
             </Text>
+            {examResult.passed ? (
+              <>
+                <Text style={styles.tipText}>
+                  • Bạn đã hoàn thành bài thi với kết quả tốt
+                </Text>
+                <Text style={styles.tipText}>
+                  • Xem lại đáp án để củng cố kiến thức
+                </Text>
+                <Text style={styles.tipText}>
+                  • Tiếp tục ôn tập để chuẩn bị cho kỳ thi chính thức
+                </Text>
+              </>
+            ) : (
+              <>
+                <Text style={styles.tipText}>
+                  • Cần đúng ít nhất 21/25 câu (84%) để đạt
+                </Text>
+                <Text style={styles.tipText}>
+                  • Không được sai bất kỳ câu điểm liệt nào
+                </Text>
+                <Text style={styles.tipText}>
+                  • Xem lại đáp án và giải thích để hiểu rõ hơn
+                </Text>
+                <Text style={styles.tipText}>
+                  • Ôn tập kỹ các phần còn yếu và thử lại
+                </Text>
+              </>
+            )}
           </View>
-          <View style={styles.infoDivider} />
-          <View style={styles.infoItem}>
-            <Text style={styles.infoLabel}>Thời gian</Text>
-            <Text style={styles.infoValue}>
-              {new Date(examResult.date).toLocaleString("vi-VN")}
-            </Text>
-          </View>
-        </View>
 
-        {/* Tips Card */}
-        <View style={styles.tipsCard}>
-          <Text style={styles.tipsTitle}>
-            {examResult.passed ? "✅ Điều cần biết" : "💪 Lời khuyên"}
-          </Text>
-          {examResult.passed ? (
-            <>
-              <Text style={styles.tipText}>
-                • Bạn đã hoàn thành bài thi với kết quả tốt
-              </Text>
-              <Text style={styles.tipText}>
-                • Xem lại đáp án để củng cố kiến thức
-              </Text>
-              <Text style={styles.tipText}>
-                • Tiếp tục ôn tập để chuẩn bị cho kỳ thi chính thức
-              </Text>
-            </>
-          ) : (
-            <>
-              <Text style={styles.tipText}>
-                • Cần đúng ít nhất 21/25 câu (84%) để đạt
-              </Text>
-              <Text style={styles.tipText}>
-                • Không được sai bất kỳ câu điểm liệt nào
-              </Text>
-              <Text style={styles.tipText}>
-                • Xem lại đáp án và giải thích để hiểu rõ hơn
-              </Text>
-              <Text style={styles.tipText}>
-                • Ôn tập kỹ các phần còn yếu và thử lại
-              </Text>
-            </>
-          )}
-        </View>
+          <View style={{ height: 100 }} />
+        </ScrollView>
 
-        <View style={{ height: 100 }} />
-      </ScrollView>
-
-      {/* Action Buttons */}
-      <Animated.View
-        entering={FadeInUp.delay(800)}
-        style={styles.actionButtons}
-      >
-        <PressableScale style={styles.actionButtonWrapper}>
-          <LinearGradient
-            colors={["#007AFF", "#5856D6"]}
-            style={[styles.actionButton, styles.reviewButton]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-          >
-            <PressableScale
-              onPress={handleReview}
-              style={styles.actionButtonInner}
-            >
-              <Text style={styles.reviewButtonText}>🔍 Xem đáp án</Text>
-            </PressableScale>
-          </LinearGradient>
-        </PressableScale>
-
-        <View style={styles.secondaryButtons}>
-          <PressableScale style={[styles.actionButtonWrapper, { flex: 1 }]}>
+        {/* Action Buttons */}
+        <Animated.View
+          entering={FadeInUp.delay(800)}
+          style={styles.actionButtons}
+        >
+          <PressableScale style={styles.actionButtonWrapper}>
             <LinearGradient
-              colors={["#34C759", "#28a745"]}
-              style={[styles.actionButton, styles.retakeButton]}
+              colors={["#007AFF", "#5856D6"]}
+              style={[styles.actionButton, styles.reviewButton]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
             >
               <PressableScale
-                onPress={handleRetake}
+                onPress={handleReview}
                 style={styles.actionButtonInner}
               >
-                <Text style={styles.retakeButtonText}>🔄 Thi lại</Text>
+                <Text style={styles.reviewButtonText}>🔍 Xem đáp án</Text>
               </PressableScale>
             </LinearGradient>
           </PressableScale>
 
-          <PressableScale style={[styles.actionButtonWrapper, { flex: 1 }]}>
-            <View style={[styles.actionButton, styles.homeButton]}>
-              <PressableScale
-                onPress={handleHome}
-                style={styles.actionButtonInner}
+          <View style={styles.secondaryButtons}>
+            <PressableScale style={[styles.actionButtonWrapper, { flex: 1 }]}>
+              <LinearGradient
+                colors={["#34C759", "#28a745"]}
+                style={[styles.actionButton, styles.retakeButton]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
               >
-                <Text style={styles.homeButtonText}>🏠 Trang chủ</Text>
-              </PressableScale>
-            </View>
-          </PressableScale>
-        </View>
-      </Animated.View>
-    </SafeAreaView>
+                <PressableScale
+                  onPress={handleRetake}
+                  style={styles.actionButtonInner}
+                >
+                  <Text style={styles.retakeButtonText}>🔄 Thi lại</Text>
+                </PressableScale>
+              </LinearGradient>
+            </PressableScale>
+
+            <PressableScale style={[styles.actionButtonWrapper, { flex: 1 }]}>
+              <View style={[styles.actionButton, styles.homeButton]}>
+                <PressableScale
+                  onPress={handleHome}
+                  style={styles.actionButtonInner}
+                >
+                  <Text style={styles.homeButtonText}>🏠 Trang chủ</Text>
+                </PressableScale>
+              </View>
+            </PressableScale>
+          </View>
+        </Animated.View>
+      </SafeAreaView>
+    </TouchableScreenWrapper>
   );
 }
 

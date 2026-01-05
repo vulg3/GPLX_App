@@ -4,13 +4,14 @@ import React from "react";
 import {
   Dimensions,
   Image,
-  SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   View,
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   AnimatedCard,
   PressableScale,
@@ -31,7 +32,8 @@ export default function ReviewAnswers() {
 
   return (
     <TouchableScreenWrapper>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={["top"]}>
+        <StatusBar barStyle="dark-content" backgroundColor="#fff" />
         <LinearGradient colors={["#fff", "#f8f9fa"]} style={styles.header}>
           <PressableScale
             onPress={() => navigation.goBack()}

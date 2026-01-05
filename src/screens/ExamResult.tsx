@@ -3,8 +3,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import {
   Dimensions,
-  SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   View,
@@ -21,6 +21,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   ConfettiEffect,
   PressableScale,
@@ -92,7 +93,8 @@ export default function ExamResult() {
 
   return (
     <TouchableScreenWrapper>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={["top"]}>
+        <StatusBar barStyle="dark-content" backgroundColor="#f8f9fa" />
         {showConfetti && examResult.passed && <ConfettiEffect />}
 
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>

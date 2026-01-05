@@ -6,8 +6,8 @@ import {
   Dimensions,
   Image,
   Modal,
-  SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   View,
@@ -17,6 +17,7 @@ import Animated, {
   FadeInUp,
   ZoomIn,
 } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   AnimatedProgressBar,
   LoadingSpinner,
@@ -167,6 +168,7 @@ export default function Exam() {
   if (examQuestions.length === 0) {
     return (
       <LinearGradient colors={["#667eea", "#764ba2"]} style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor="#667eea" />
         <SafeAreaView style={styles.safeArea}>
           <Animated.View
             entering={FadeInDown.duration(600).springify()}
@@ -199,7 +201,8 @@ export default function Exam() {
 
   return (
     <TouchableScreenWrapper>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container} edges={["top"]}>
+        <StatusBar barStyle="dark-content" backgroundColor="#fff" />
         {/* Header */}
         <LinearGradient colors={["#fff", "#f8f9fa"]} style={styles.header}>
           <View style={styles.headerTop}>

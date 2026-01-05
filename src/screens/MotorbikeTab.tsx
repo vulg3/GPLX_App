@@ -3,8 +3,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
-  SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   View,
@@ -17,11 +17,16 @@ import { responsive, rv } from "../utils/responsive";
 import { getStatistics, saveSelectedLicense } from "../utils/storage";
 
 // Import JSON data
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import bikeQuestions from "../../assets/data/shlx.bike_questions.json";
 
 export default function MotorbikeTab() {
   const navigation = useNavigation();
   const { isDarkMode, colors } = useTheme();
+  const { top } = useSafeAreaInsets();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [stats, setStats] = useState({
     totalExams: 0,
@@ -85,13 +90,18 @@ export default function MotorbikeTab() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
+      edges={[]}
     >
+      <StatusBar barStyle="light-content" backgroundColor="#667eea" />
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <LinearGradient colors={["#667eea", "#764ba2"]} style={styles.header}>
+        <LinearGradient
+          colors={["#667eea", "#764ba2"]}
+          style={[styles.header, { paddingTop: top }]}
+        >
           <Animated.View entering={FadeInDown.duration(600).springify()}>
             <View style={styles.headerTop}>
               <View>

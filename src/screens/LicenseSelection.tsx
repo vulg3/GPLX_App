@@ -4,12 +4,13 @@ import React, { useEffect, useState } from "react";
 import {
   Dimensions,
   Image,
-  SafeAreaView,
+  StatusBar,
   StyleSheet,
   Text,
   View,
 } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { PressableScale } from "../components";
 import { LicenseType } from "../types/Question";
 import { getSelectedLicense, saveSelectedLicense } from "../utils/storage";
@@ -42,7 +43,8 @@ export default function LicenseSelection() {
 
   return (
     <LinearGradient colors={["#667eea", "#764ba2"]} style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor="#667eea" />
+      <SafeAreaView style={styles.safeArea} edges={["top"]}>
         <View style={styles.content}>
           <Animated.View entering={FadeInDown.duration(800).springify()}>
             <Image

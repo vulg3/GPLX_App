@@ -3,13 +3,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import {
-  SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { APP_INFO } from "../constants/legalUrls";
 import { useTheme } from "../contexts/ThemeContext";
 
@@ -22,7 +23,14 @@ export default function TermsOfUse() {
   const subTextColor = isDarkMode ? "#aaa" : "#666";
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor }]}
+      edges={["top"]}
+    >
+      <StatusBar
+        barStyle={isDarkMode ? "light-content" : "dark-content"}
+        backgroundColor={colors.card}
+      />
       {/* Header */}
       <View
         style={[

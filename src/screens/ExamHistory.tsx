@@ -4,12 +4,13 @@ import React, { useEffect, useState } from "react";
 import {
   Alert,
   FlatList,
-  SafeAreaView,
+  StatusBar,
   StyleSheet,
   Text,
   View,
 } from "react-native";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { PressableScale, TouchableScreenWrapper } from "../components";
 import { useTheme } from "../contexts/ThemeContext";
 import { ExamResult, LicenseType } from "../types/Question";
@@ -170,7 +171,12 @@ export default function ExamHistory() {
     <TouchableScreenWrapper>
       <SafeAreaView
         style={[styles.container, { backgroundColor: colors.background }]}
+        edges={["top"]}
       >
+        <StatusBar
+          barStyle={isDarkMode ? "light-content" : "dark-content"}
+          backgroundColor={isDarkMode ? colors.card : "#fff"}
+        />
         <LinearGradient
           colors={
             isDarkMode ? [colors.card, colors.background] : ["#fff", "#f8f9fa"]

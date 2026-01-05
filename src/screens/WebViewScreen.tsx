@@ -3,12 +3,13 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import React from "react";
 import {
   ActivityIndicator,
-  SafeAreaView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 import { useTheme } from "../contexts/ThemeContext";
 
@@ -19,7 +20,14 @@ export default function WebViewScreen() {
   const { url, title } = route.params as { url: string; title: string };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.card }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.card }]}
+      edges={["top"]}
+    >
+      <StatusBar
+        barStyle={colors.text === "#fff" ? "light-content" : "dark-content"}
+        backgroundColor={colors.card}
+      />
       {/* Header */}
       <View
         style={[

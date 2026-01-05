@@ -4,14 +4,15 @@ import React, { useState } from "react";
 import {
   Dimensions,
   Image,
-  SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   AnimatedCard,
   PressableScale,
@@ -245,7 +246,12 @@ export default function QuestionList() {
     <TouchableScreenWrapper>
       <SafeAreaView
         style={[styles.container, { backgroundColor: colors.background }]}
+        edges={["top", "bottom"]}
       >
+        <StatusBar
+          barStyle={isDarkMode ? "light-content" : "dark-content"}
+          backgroundColor={colors.card}
+        />
         <View
           style={[
             styles.header,

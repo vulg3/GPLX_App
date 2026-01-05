@@ -30,8 +30,8 @@ export default function MainTabs() {
         {/* Custom tab bar */}
         <View
           style={{
-            height: Platform.OS === "ios" ? rv(88, 100) : rv(60, 70),
-            paddingBottom: Platform.OS === "ios" ? rv(20, 24) : rv(8, 12),
+            height: Platform.OS === "ios" ? rv(88, 100) : rv(70, 80),
+            paddingBottom: Platform.OS === "ios" ? rv(20, 24) : rv(18, 20),
             paddingTop: rv(8, 12),
             backgroundColor: colors.card,
             borderTopWidth: 1,

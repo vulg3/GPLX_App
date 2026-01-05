@@ -5,14 +5,15 @@ import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import {
   Alert,
-  SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Switch,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { APP_INFO } from "../constants/legalUrls";
 import { useTheme } from "../contexts/ThemeContext";
 
@@ -66,7 +67,14 @@ export default function Settings() {
   const subTextColor = isDarkMode ? "#aaa" : "#666";
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor }]}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor }]}
+      edges={["top"]}
+    >
+      <StatusBar
+        barStyle={isDarkMode ? "light-content" : "dark-content"}
+        backgroundColor={backgroundColor}
+      />
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}

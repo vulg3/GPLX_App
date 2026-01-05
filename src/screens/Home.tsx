@@ -3,13 +3,14 @@ import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
-  SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   View,
 } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { AnimatedCard, PressableScale } from "../components";
 import { LicenseType, Question } from "../types/Question";
 import { getSelectedLicense, getStatistics } from "../utils/storage";
@@ -102,7 +103,8 @@ export default function Home() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      <StatusBar barStyle="light-content" backgroundColor="#667eea" />
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}

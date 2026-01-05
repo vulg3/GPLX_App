@@ -1,4 +1,4 @@
-package com.ainosha.GPLX_App
+package com.hault.ltgt
 
 import android.app.Application
 import android.content.res.Configuration

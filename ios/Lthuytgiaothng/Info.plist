@@ -7,7 +7,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
-    <string>GPLX_App</string>
+    <string>Lý thuyết giao thông</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -28,7 +28,7 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>gplxapp</string>
-          <string>com.ainosha.GPLX-App</string>
+          <string>com.hault.ltgt</string>
         </array>
       </dict>
     </array>

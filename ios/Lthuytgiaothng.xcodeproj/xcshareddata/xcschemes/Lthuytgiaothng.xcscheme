@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "GPLXApp.app"
-               BlueprintName = "GPLXApp"
-               ReferencedContainer = "container:GPLXApp.xcodeproj">
+               BuildableName = "Lthuytgiaothng.app"
+               BlueprintName = "Lthuytgiaothng"
+               ReferencedContainer = "container:Lthuytgiaothng.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "GPLXAppTests.xctest"
-               BlueprintName = "GPLXAppTests"
-               ReferencedContainer = "container:GPLXApp.xcodeproj">
+               BuildableName = "LthuytgiaothngTests.xctest"
+               BlueprintName = "LthuytgiaothngTests"
+               ReferencedContainer = "container:Lthuytgiaothng.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "GPLXApp.app"
-            BlueprintName = "GPLXApp"
-            ReferencedContainer = "container:GPLXApp.xcodeproj">
+            BuildableName = "Lthuytgiaothng.app"
+            BlueprintName = "Lthuytgiaothng"
+            ReferencedContainer = "container:Lthuytgiaothng.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "GPLXApp.app"
-            BlueprintName = "GPLXApp"
-            ReferencedContainer = "container:GPLXApp.xcodeproj">
+            BuildableName = "Lthuytgiaothng.app"
+            BlueprintName = "Lthuytgiaothng"
+            ReferencedContainer = "container:Lthuytgiaothng.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

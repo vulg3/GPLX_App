@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "GPLX_App",
-    "slug": "GPLX_App",
+    "name": "Lý thuyết giao thông",
+    "slug": "lythuyetgiaothong",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ainosha.GPLX-App"
+      "bundleIdentifier": "com.hault.ltgt"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +23,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.ainosha.GPLX_App"
+      "package": "com.hault.ltgt"
     },
     "web": {
       "bundler": "metro",
@@ -35,6 +35,10 @@
         {
           "ios": {
             "useFrameworks": "static"
+          },
+          "android": {
+            "enableProguardInReleaseBuilds": true,
+            "enableShrinkResourcesInReleaseBuilds": true
           }
         }
       ],
@@ -45,6 +49,12 @@
           "iosAppId": "ca-app-pub-2615112087856757~4950144509"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "6f9ec095-6533-4007-a3ac-c28dcfea2cb8"
+      }
+    },
+    "owner": "hault"
   }
 }

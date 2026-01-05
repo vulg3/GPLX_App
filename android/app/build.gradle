@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.ainosha.GPLX_App'
+    namespace 'com.hault.ltgt'
     defaultConfig {
-        applicationId 'com.ainosha.GPLX_App'
+        applicationId 'com.hault.ltgt'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

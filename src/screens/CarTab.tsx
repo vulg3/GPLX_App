@@ -10,7 +10,10 @@ import {
   View,
 } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { AnimatedCard, PressableScale } from "../components";
 import { useTheme } from "../contexts/ThemeContext";
 import { Question } from "../types/Question";
@@ -31,7 +34,7 @@ export default function CarTab() {
     bestScore: 0,
     passRate: 0,
   });
-
+  const { top } = useSafeAreaInsets();
   useEffect(() => {
     loadData();
   }, []);
@@ -96,7 +99,10 @@ export default function CarTab() {
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <LinearGradient colors={["#f093fb", "#f5576c"]} style={styles.header}>
+        <LinearGradient
+          colors={["#f093fb", "#f5576c"]}
+          style={[styles.header, { paddingTop: top }]}
+        >
           <Animated.View entering={FadeInDown.duration(600).springify()}>
             <View style={styles.headerTop}>
               <View>

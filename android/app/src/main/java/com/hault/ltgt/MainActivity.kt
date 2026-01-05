@@ -1,4 +1,4 @@
-package com.ainosha.GPLX_App
+package com.hault.ltgt
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

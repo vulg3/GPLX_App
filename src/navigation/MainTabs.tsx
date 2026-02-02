@@ -2,7 +2,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React, { useEffect } from "react";
 import { Platform, Text, View } from "react-native";
-import { AdBanner } from "../components/AdBanner";
 import { TouchableScreenWrapper } from "../components/TouchableScreenWrapper";
 import { useTheme } from "../contexts/ThemeContext";
 import CarTab from "../screens/CarTab";
@@ -10,6 +9,7 @@ import MotorbikeTab from "../screens/MotorbikeTab";
 import Settings from "../screens/Settings";
 import AdMobService from "../services/AdMobService";
 import { responsive, rv } from "../utils/responsive";
+import { AdBanner } from "@/components";
 
 const Tab = createBottomTabNavigator();
 
@@ -96,8 +96,8 @@ export default function MainTabs() {
                     color: isFocused
                       ? colors.primary
                       : isDarkMode
-                      ? "#8e8e93"
-                      : "#999",
+                        ? "#8e8e93"
+                        : "#999",
                     marginTop: 4,
                   }}
                 >

@@ -5,6 +5,7 @@ import mobileAds, {
   InterstitialAd,
   TestIds,
 } from "react-native-google-mobile-ads";
+import { getAdsHidden } from "../utils/storage";
 
 // Replace these with your actual AdMob unit IDs
 const ADMOB_UNIT_IDS = {
@@ -109,6 +110,14 @@ class AdMobService {
    */
   async showInterstitialAd(callback?: () => void): Promise<void> {
     try {
+      // Check if ads are hidden
+      const adsHidden = await getAdsHidden();
+      if (adsHidden) {
+        console.log("Ads are hidden, skipping interstitial ad");
+        if (callback) callback();
+        return;
+      }
+
       if (this.interstitialAd && this.isInterstitialLoaded) {
         await this.interstitialAd.show();
         if (callback) callback();

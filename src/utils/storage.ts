@@ -5,6 +5,7 @@ const KEYS = {
   EXAM_RESULTS: "EXAM_RESULTS",
   STUDY_PROGRESS: "STUDY_PROGRESS",
   SELECTED_LICENSE: "SELECTED_LICENSE",
+  ADS_HIDDEN: "ADS_HIDDEN",
 };
 
 // Exam Results
@@ -92,6 +93,25 @@ export const getSelectedLicense = async (): Promise<LicenseType | null> => {
   } catch (error) {
     console.error("Error getting selected license:", error);
     return null;
+  }
+};
+
+// Ads Hidden State
+export const setAdsHidden = async (hidden: boolean): Promise<void> => {
+  try {
+    await AsyncStorage.setItem(KEYS.ADS_HIDDEN, JSON.stringify(hidden));
+  } catch (error) {
+    console.error("Error saving ads hidden state:", error);
+  }
+};
+
+export const getAdsHidden = async (): Promise<boolean> => {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.ADS_HIDDEN);
+    return data ? JSON.parse(data) : false;
+  } catch (error) {
+    console.error("Error getting ads hidden state:", error);
+    return false;
   }
 };
 

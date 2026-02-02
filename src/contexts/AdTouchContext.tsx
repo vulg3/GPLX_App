@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useRef } from "react";
-import AdMobService from "../services/AdMobService";
+import { useAdsVisibility } from "./AdsVisibilityContext";
+import AdMobService from "@/services/AdMobService";
 
 interface AdTouchContextType {
   handleTouch: () => void;
@@ -16,8 +17,14 @@ export const AdTouchProvider: React.FC<{ children: React.ReactNode }> = ({
   const targetTouchCountRef = useRef(
     Math.floor(Math.random() * 51) + 100 // Random between 100-150
   );
+  const { adsHidden } = useAdsVisibility();
 
   const handleTouch = () => {
+    // Don't track touches if ads are hidden
+    if (adsHidden) {
+      return;
+    }
+
     touchCountRef.current += 1;
 
     if (touchCountRef.current >= targetTouchCountRef.current) {
@@ -29,7 +36,7 @@ export const AdTouchProvider: React.FC<{ children: React.ReactNode }> = ({
         console.log(
           `Next ad will show after ${targetTouchCountRef.current} touches`
         );
-      });
+      }); //FIXME
     }
   };
 

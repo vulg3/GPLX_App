@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { BannerAd, BannerAdSize } from "react-native-google-mobile-ads";
+import { useAdsVisibility } from "../contexts/AdsVisibilityContext";
 import AdMobService from "../services/AdMobService";
 
 interface AdBannerProps {
@@ -8,7 +9,13 @@ interface AdBannerProps {
 }
 
 export const AdBanner: React.FC<AdBannerProps> = ({ size }) => {
+  const { adsHidden } = useAdsVisibility();
   const adUnitId = AdMobService.getBannerAdUnitId();
+
+  // Don't render banner if ads are hidden
+  if (adsHidden) {
+    return null;
+  }
 
   return (
     <View style={styles.container}>

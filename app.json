@@ -2,7 +2,7 @@
   "expo": {
     "name": "Lý thuyết giao thông",
     "slug": "lythuyetgiaothong",
-    "version": "1.0.0",
+    "version": "1.2",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "scheme": "gplxapp",
@@ -15,9 +15,9 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.hault.ltgt",
-      "buildNumber": "1"
+      "appleTeamId": "LF5JJ2F6DY"
     },
     "android": {
       "adaptiveIcon": {
@@ -27,7 +27,10 @@
       "edgeToEdgeEnabled": true,
       "package": "com.hault.ltgt",
       "versionCode": 1,
-      "permissions": ["INTERNET", "ACCESS_NETWORK_STATE"]
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -46,7 +49,8 @@
             "enableShrinkResourcesInReleaseBuilds": true,
             "minSdkVersion": 24,
             "compileSdkVersion": 35,
-            "targetSdkVersion": 35
+            "targetSdkVersion": 35,
+            "enableMinifyInReleaseBuilds": true
           }
         }
       ],
@@ -54,7 +58,7 @@
         "react-native-google-mobile-ads",
         {
           "androidAppId": "ca-app-pub-2615112087856757~4950144509",
-          "iosAppId": "ca-app-pub-2615112087856757~4950144509"
+          "iosAppId": "ca-app-pub-2615112087856757~1925146406"
         }
       ]
     ],

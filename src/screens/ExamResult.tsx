@@ -79,7 +79,7 @@ export default function ExamResult() {
   }));
 
   const handleReview = () => {
-    navigation.navigate("ReviewAnswers" as never, { examResult } as never);
+    (navigation as any).navigate("ReviewAnswers", { examResult });
   };
 
   const handleRetake = () => {
@@ -88,7 +88,7 @@ export default function ExamResult() {
   };
 
   const handleHome = () => {
-    navigation.navigate("Home" as never);
+    (navigation as any).navigate("MainTabs");
   };
 
   return (
@@ -243,7 +243,9 @@ export default function ExamResult() {
             ) : (
               <>
                 <Text style={styles.tipText}>
-                  • Cần đúng ít nhất 21/25 câu (84%) để đạt
+                  {examResult.licenseType === "B"
+                    ? "• Cần đúng ít nhất 27/30 câu (90%) để đạt"
+                    : "• Cần đúng ít nhất 21/25 câu (84%) để đạt"}
                 </Text>
                 <Text style={styles.tipText}>
                   • Không được sai bất kỳ câu điểm liệt nào

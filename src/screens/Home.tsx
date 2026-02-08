@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { TouchableScreenWrapper } from "../components/TouchableScreenWrapper";
 import { AnimatedCard, PressableScale } from "../components";
 import { LicenseType, Question } from "../types/Question";
 import { getSelectedLicense, getStatistics } from "../utils/storage";
@@ -104,212 +105,214 @@ export default function Home() {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
-      <StatusBar barStyle="light-content" backgroundColor="#667eea" />
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <LinearGradient colors={["#667eea", "#764ba2"]} style={styles.header}>
-          <Animated.View entering={FadeInDown.duration(600).springify()}>
-            <View style={styles.headerTop}>
-              <View>
-                <Text style={styles.greeting}>Xin chào! 👋</Text>
-                <Text style={styles.licenseText}>
-                  Bằng lái:{" "}
-                  <Text style={styles.licenseBold}>
-                    {licenseType === "A" ? "A / A1" : "B / B1"}
+      <TouchableScreenWrapper>
+        <StatusBar barStyle="light-content" backgroundColor="#667eea" />
+        <ScrollView
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Header */}
+          <LinearGradient colors={["#667eea", "#764ba2"]} style={styles.header}>
+            <Animated.View entering={FadeInDown.duration(600).springify()}>
+              <View style={styles.headerTop}>
+                <View>
+                  <Text style={styles.greeting}>Xin chào! 👋</Text>
+                  <Text style={styles.licenseText}>
+                    Bằng lái:{" "}
+                    <Text style={styles.licenseBold}>
+                      {licenseType === "A" ? "A / A1" : "B / B1"}
+                    </Text>
                   </Text>
-                </Text>
+                </View>
+                <PressableScale
+                  onPress={handleChangeLicense}
+                  style={styles.changeLicenseBtn}
+                >
+                  <Text style={styles.changeLicenseText}>Đổi</Text>
+                </PressableScale>
               </View>
+              <Text style={styles.questionCount}>
+                📚 Tổng số:{" "}
+                <Text style={styles.questionCountBold}>{questions.length}</Text>{" "}
+                câu hỏi
+              </Text>
+            </Animated.View>
+          </LinearGradient>
+
+          {/* Statistics */}
+          {stats.totalExams > 0 && (
+            <AnimatedCard delay={100} style={styles.statsContainer}>
+              <Text style={styles.statsTitle}>📊 Thống kê của bạn</Text>
+              <View style={styles.statsGrid}>
+                <Animated.View
+                  entering={FadeInUp.delay(200).springify()}
+                  style={styles.statCard}
+                >
+                  <View
+                    style={[
+                      styles.statIconContainer,
+                      { backgroundColor: "#e3f2fd" },
+                    ]}
+                  >
+                    <Text style={styles.statIcon}>📝</Text>
+                  </View>
+                  <Text style={styles.statValue}>{stats.totalExams}</Text>
+                  <Text style={styles.statLabel}>Lần thi</Text>
+                </Animated.View>
+                <Animated.View
+                  entering={FadeInUp.delay(300).springify()}
+                  style={styles.statCard}
+                >
+                  <View
+                    style={[
+                      styles.statIconContainer,
+                      { backgroundColor: "#e8f5e9" },
+                    ]}
+                  >
+                    <Text style={styles.statIcon}>✅</Text>
+                  </View>
+                  <Text style={[styles.statValue, { color: "#34C759" }]}>
+                    {stats.passedExams}
+                  </Text>
+                  <Text style={styles.statLabel}>Đạt</Text>
+                </Animated.View>
+                <Animated.View
+                  entering={FadeInUp.delay(400).springify()}
+                  style={styles.statCard}
+                >
+                  <View
+                    style={[
+                      styles.statIconContainer,
+                      { backgroundColor: "#fff3e0" },
+                    ]}
+                  >
+                    <Text style={styles.statIcon}>📈</Text>
+                  </View>
+                  <Text style={[styles.statValue, { color: "#FF9500" }]}>
+                    {stats.averageScore}
+                  </Text>
+                  <Text style={styles.statLabel}>Điểm TB</Text>
+                </Animated.View>
+                <Animated.View
+                  entering={FadeInUp.delay(500).springify()}
+                  style={styles.statCard}
+                >
+                  <View
+                    style={[
+                      styles.statIconContainer,
+                      { backgroundColor: "#e3f2fd" },
+                    ]}
+                  >
+                    <Text style={styles.statIcon}>🏆</Text>
+                  </View>
+                  <Text style={[styles.statValue, { color: "#007AFF" }]}>
+                    {stats.bestScore}
+                  </Text>
+                  <Text style={styles.statLabel}>Cao nhất</Text>
+                </Animated.View>
+              </View>
+            </AnimatedCard>
+          )}
+
+          {/* Main Actions */}
+          <View style={styles.actionsContainer}>
+            <AnimatedCard delay={200}>
               <PressableScale
-                onPress={handleChangeLicense}
-                style={styles.changeLicenseBtn}
+                style={styles.actionCardInner}
+                onPress={handleStudy}
               >
-                <Text style={styles.changeLicenseText}>Đổi</Text>
+                <LinearGradient
+                  colors={["#34C759", "#28a745"]}
+                  style={[styles.actionGradient, styles.studyCard]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                >
+                  <View style={styles.actionIcon}>
+                    <Text style={styles.actionIconText}>📖</Text>
+                  </View>
+                  <View style={styles.actionContent}>
+                    <Text style={styles.actionTitle}>Học câu hỏi</Text>
+                    <Text style={styles.actionDescription}>
+                      Xem tất cả câu hỏi theo từng danh mục
+                    </Text>
+                  </View>
+                  <Text style={styles.actionArrow}>›</Text>
+                </LinearGradient>
               </PressableScale>
+            </AnimatedCard>
+
+            <AnimatedCard delay={300}>
+              <PressableScale style={styles.actionCardInner} onPress={handleExam}>
+                <LinearGradient
+                  colors={["#FF9500", "#ff6b6b"]}
+                  style={[styles.actionGradient, styles.examCard]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                >
+                  <View style={styles.actionIcon}>
+                    <Text style={styles.actionIconText}>✍️</Text>
+                  </View>
+                  <View style={styles.actionContent}>
+                    <Text style={styles.actionTitle}>Thi thử 25 câu</Text>
+                    <Text style={styles.actionDescription}>
+                      Làm bài thi giống như thi thật
+                    </Text>
+                  </View>
+                  <Text style={styles.actionArrow}>›</Text>
+                </LinearGradient>
+              </PressableScale>
+            </AnimatedCard>
+
+            <AnimatedCard delay={400}>
+              <PressableScale
+                style={styles.actionCardInner}
+                onPress={handleHistory}
+              >
+                <LinearGradient
+                  colors={["#007AFF", "#5856D6"]}
+                  style={[styles.actionGradient, styles.historyCard]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                >
+                  <View style={styles.actionIcon}>
+                    <Text style={styles.actionIconText}>📊</Text>
+                  </View>
+                  <View style={styles.actionContent}>
+                    <Text style={styles.actionTitle}>Lịch sử thi</Text>
+                    <Text style={styles.actionDescription}>
+                      Xem lại các bài thi đã làm
+                    </Text>
+                  </View>
+                  <Text style={styles.actionArrow}>›</Text>
+                </LinearGradient>
+              </PressableScale>
+            </AnimatedCard>
+          </View>
+
+          {/* Tips */}
+          <View style={styles.tipsContainer}>
+            <Text style={styles.tipsTitle}>💡 Mẹo ôn thi</Text>
+            <View style={styles.tipItem}>
+              <Text style={styles.tipBullet}>•</Text>
+              <Text style={styles.tipText}>
+                Học kỹ các câu điểm liệt - sai 1 câu là trượt
+              </Text>
             </View>
-            <Text style={styles.questionCount}>
-              📚 Tổng số:{" "}
-              <Text style={styles.questionCountBold}>{questions.length}</Text>{" "}
-              câu hỏi
-            </Text>
-          </Animated.View>
-        </LinearGradient>
-
-        {/* Statistics */}
-        {stats.totalExams > 0 && (
-          <AnimatedCard delay={100} style={styles.statsContainer}>
-            <Text style={styles.statsTitle}>📊 Thống kê của bạn</Text>
-            <View style={styles.statsGrid}>
-              <Animated.View
-                entering={FadeInUp.delay(200).springify()}
-                style={styles.statCard}
-              >
-                <View
-                  style={[
-                    styles.statIconContainer,
-                    { backgroundColor: "#e3f2fd" },
-                  ]}
-                >
-                  <Text style={styles.statIcon}>📝</Text>
-                </View>
-                <Text style={styles.statValue}>{stats.totalExams}</Text>
-                <Text style={styles.statLabel}>Lần thi</Text>
-              </Animated.View>
-              <Animated.View
-                entering={FadeInUp.delay(300).springify()}
-                style={styles.statCard}
-              >
-                <View
-                  style={[
-                    styles.statIconContainer,
-                    { backgroundColor: "#e8f5e9" },
-                  ]}
-                >
-                  <Text style={styles.statIcon}>✅</Text>
-                </View>
-                <Text style={[styles.statValue, { color: "#34C759" }]}>
-                  {stats.passedExams}
-                </Text>
-                <Text style={styles.statLabel}>Đạt</Text>
-              </Animated.View>
-              <Animated.View
-                entering={FadeInUp.delay(400).springify()}
-                style={styles.statCard}
-              >
-                <View
-                  style={[
-                    styles.statIconContainer,
-                    { backgroundColor: "#fff3e0" },
-                  ]}
-                >
-                  <Text style={styles.statIcon}>📈</Text>
-                </View>
-                <Text style={[styles.statValue, { color: "#FF9500" }]}>
-                  {stats.averageScore}
-                </Text>
-                <Text style={styles.statLabel}>Điểm TB</Text>
-              </Animated.View>
-              <Animated.View
-                entering={FadeInUp.delay(500).springify()}
-                style={styles.statCard}
-              >
-                <View
-                  style={[
-                    styles.statIconContainer,
-                    { backgroundColor: "#e3f2fd" },
-                  ]}
-                >
-                  <Text style={styles.statIcon}>🏆</Text>
-                </View>
-                <Text style={[styles.statValue, { color: "#007AFF" }]}>
-                  {stats.bestScore}
-                </Text>
-                <Text style={styles.statLabel}>Cao nhất</Text>
-              </Animated.View>
+            <View style={styles.tipItem}>
+              <Text style={styles.tipBullet}>•</Text>
+              <Text style={styles.tipText}>
+                Cần đúng ≥ 21/25 câu (84%) để đạt yêu cầu
+              </Text>
             </View>
-          </AnimatedCard>
-        )}
-
-        {/* Main Actions */}
-        <View style={styles.actionsContainer}>
-          <AnimatedCard delay={200}>
-            <PressableScale
-              style={styles.actionCardInner}
-              onPress={handleStudy}
-            >
-              <LinearGradient
-                colors={["#34C759", "#28a745"]}
-                style={[styles.actionGradient, styles.studyCard]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-              >
-                <View style={styles.actionIcon}>
-                  <Text style={styles.actionIconText}>📖</Text>
-                </View>
-                <View style={styles.actionContent}>
-                  <Text style={styles.actionTitle}>Học câu hỏi</Text>
-                  <Text style={styles.actionDescription}>
-                    Xem tất cả câu hỏi theo từng danh mục
-                  </Text>
-                </View>
-                <Text style={styles.actionArrow}>›</Text>
-              </LinearGradient>
-            </PressableScale>
-          </AnimatedCard>
-
-          <AnimatedCard delay={300}>
-            <PressableScale style={styles.actionCardInner} onPress={handleExam}>
-              <LinearGradient
-                colors={["#FF9500", "#ff6b6b"]}
-                style={[styles.actionGradient, styles.examCard]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-              >
-                <View style={styles.actionIcon}>
-                  <Text style={styles.actionIconText}>✍️</Text>
-                </View>
-                <View style={styles.actionContent}>
-                  <Text style={styles.actionTitle}>Thi thử 25 câu</Text>
-                  <Text style={styles.actionDescription}>
-                    Làm bài thi giống như thi thật
-                  </Text>
-                </View>
-                <Text style={styles.actionArrow}>›</Text>
-              </LinearGradient>
-            </PressableScale>
-          </AnimatedCard>
-
-          <AnimatedCard delay={400}>
-            <PressableScale
-              style={styles.actionCardInner}
-              onPress={handleHistory}
-            >
-              <LinearGradient
-                colors={["#007AFF", "#5856D6"]}
-                style={[styles.actionGradient, styles.historyCard]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-              >
-                <View style={styles.actionIcon}>
-                  <Text style={styles.actionIconText}>📊</Text>
-                </View>
-                <View style={styles.actionContent}>
-                  <Text style={styles.actionTitle}>Lịch sử thi</Text>
-                  <Text style={styles.actionDescription}>
-                    Xem lại các bài thi đã làm
-                  </Text>
-                </View>
-                <Text style={styles.actionArrow}>›</Text>
-              </LinearGradient>
-            </PressableScale>
-          </AnimatedCard>
-        </View>
-
-        {/* Tips */}
-        <View style={styles.tipsContainer}>
-          <Text style={styles.tipsTitle}>💡 Mẹo ôn thi</Text>
-          <View style={styles.tipItem}>
-            <Text style={styles.tipBullet}>•</Text>
-            <Text style={styles.tipText}>
-              Học kỹ các câu điểm liệt - sai 1 câu là trượt
-            </Text>
+            <View style={styles.tipItem}>
+              <Text style={styles.tipBullet}>•</Text>
+              <Text style={styles.tipText}>
+                Làm quen với biển báo và sa hình giao thông
+              </Text>
+            </View>
           </View>
-          <View style={styles.tipItem}>
-            <Text style={styles.tipBullet}>•</Text>
-            <Text style={styles.tipText}>
-              Cần đúng ≥ 21/25 câu (84%) để đạt yêu cầu
-            </Text>
-          </View>
-          <View style={styles.tipItem}>
-            <Text style={styles.tipBullet}>•</Text>
-            <Text style={styles.tipText}>
-              Làm quen với biển báo và sa hình giao thông
-            </Text>
-          </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </TouchableScreenWrapper>
     </SafeAreaView>
   );
 }

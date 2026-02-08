@@ -2,7 +2,7 @@ import { LicenseType, Question } from "../types/Question";
 
 /**
  * Generates an exam from a pool of questions based on license type
- * - License A (Motorbike): 25 questions, 19 minutes, pass: 23/25
+ * - License A (Motorbike): 25 questions, 19 minutes, pass: 21/25
  * - License B (Car): 30 questions, 20 minutes, pass: 27/30
  * Ensures a balanced mix of regular and critical (diem-liet) questions
  */
@@ -108,7 +108,7 @@ export function generateExam(
 /**
  * Calculates the exam score and determines if the user passed
  * Pass requirements:
- * - License A (Motorbike): 23/25 correct (92%) + no critical errors
+ * - License A (Motorbike): 21/25 correct (84%) + no critical errors
  * - License B (Car): 27/30 correct (90%) + no critical errors
  * @returns Object containing score, totalQuestions, and passed status
  */
@@ -147,9 +147,9 @@ export function calculateScore(
   const score = correctAnswers;
 
   // Pass requirements based on license type:
-  // License A (Motorbike): 23/25 questions (92%) + no critical errors
+  // License A (Motorbike): 21/25 questions (84%) + no critical errors
   // License B (Car): 27/30 questions (90%) + no critical errors
-  const requiredScore = licenseType === "B" ? 27 : 23;
+  const requiredScore = licenseType === "B" ? 27 : 21;
   const passed = score >= requiredScore && criticalCorrect;
 
   return {

@@ -10,7 +10,7 @@ import { getAdsHidden } from "../utils/storage";
 // Replace these with your actual AdMob unit IDs
 const ADMOB_UNIT_IDS = {
   banner: {
-    ios: __DEV__ ? TestIds.BANNER : "ca-app-pub-2615112087856757~4950144509",
+    ios: __DEV__ ? TestIds.BANNER : "ca-app-pub-2615112087856757/2078023797",
     android: __DEV__
       ? TestIds.BANNER
       : "ca-app-pub-2615112087856757~4950144509",
@@ -18,7 +18,7 @@ const ADMOB_UNIT_IDS = {
   interstitial: {
     ios: __DEV__
       ? TestIds.INTERSTITIAL
-      : "ca-app-pub-2615112087856757~4950144509",
+      : "ca-app-pub-2615112087856757/7138778786",
     android: __DEV__
       ? TestIds.INTERSTITIAL
       : "ca-app-pub-2615112087856757~4950144509",

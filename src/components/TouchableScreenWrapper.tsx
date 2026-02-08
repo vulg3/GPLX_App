@@ -18,8 +18,8 @@ export const TouchableScreenWrapper: React.FC<TouchableScreenWrapperProps> = ({
   const { handleTouch } = useAdTouch();
 
   return (
-    <TouchableWithoutFeedback onPress={handleTouch}>
-      <View style={[{ flex: 1 }, style]}>{children}</View>
-    </TouchableWithoutFeedback>
+    <View style={[{ flex: 1 }, style]} onTouchStart={handleTouch}>
+      {children}
+    </View>
   );
 };

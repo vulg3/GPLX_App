@@ -19,6 +19,7 @@ export const AdsVisibilityProvider: React.FC<{ children: React.ReactNode }> = ({
     // Load ads hidden state on mount
     const loadAdsHiddenState = async () => {
       const hidden = await getAdsHidden();
+      console.log("hidden", hidden);
       setAdsHiddenState(hidden);
     };
     loadAdsHiddenState();

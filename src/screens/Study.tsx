@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AnimatedCard, PressableScale } from "../components";
+import { TouchableScreenWrapper } from "../components/TouchableScreenWrapper";
 import { useTheme } from "../contexts/ThemeContext";
 import { LicenseType, Question } from "../types/Question";
 import {
@@ -128,61 +129,63 @@ export default function Study() {
       style={[styles.container, { backgroundColor: colors.background }]}
       edges={["top"]}
     >
-      <StatusBar
-        barStyle={isDarkMode ? "light-content" : "dark-content"}
-        backgroundColor={colors.card}
-      />
-      <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Text style={styles.backButtonText}>‹ Quay lại</Text>
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>
-          Học câu hỏi
-        </Text>
-        <View style={{ width: 80 }} />
-      </View>
+      <TouchableScreenWrapper>
+        <StatusBar
+          barStyle={isDarkMode ? "light-content" : "dark-content"}
+          backgroundColor={colors.card}
+        />
+        <View style={[styles.header, { borderBottomColor: colors.border }]}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
+            <Text style={styles.backButtonText}>‹ Quay lại</Text>
+          </TouchableOpacity>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>
+            Học câu hỏi
+          </Text>
+          <View style={{ width: 80 }} />
+        </View>
 
-      <View
-        style={[
-          styles.infoCard,
-          {
-            backgroundColor: isDarkMode ? "#1e3a5f" : "#e3f2fd",
-            borderLeftColor: isDarkMode ? "#5896e3" : "#2196F3",
-          },
-        ]}
-      >
-        <Text
+        <View
           style={[
-            styles.infoTitle,
-            { color: isDarkMode ? "#5896e3" : "#1976D2" },
+            styles.infoCard,
+            {
+              backgroundColor: isDarkMode ? "#1e3a5f" : "#e3f2fd",
+              borderLeftColor: isDarkMode ? "#5896e3" : "#2196F3",
+            },
           ]}
         >
-          📚 Danh mục câu hỏi
-        </Text>
-        <Text
-          style={[
-            styles.infoText,
-            { color: isDarkMode ? "#5896e3" : "#1976D2" },
-          ]}
-        >
-          Chọn danh mục để xem chi tiết các câu hỏi và đáp án
-        </Text>
-      </View>
+          <Text
+            style={[
+              styles.infoTitle,
+              { color: isDarkMode ? "#5896e3" : "#1976D2" },
+            ]}
+          >
+            📚 Danh mục câu hỏi
+          </Text>
+          <Text
+            style={[
+              styles.infoText,
+              { color: isDarkMode ? "#5896e3" : "#1976D2" },
+            ]}
+          >
+            Chọn danh mục để xem chi tiết các câu hỏi và đáp án
+          </Text>
+        </View>
 
-      <FlatList
-        data={categories}
-        renderItem={renderCategoryItem}
-        keyExtractor={(item) => item}
-        contentContainerStyle={styles.categoriesContainer}
-        showsVerticalScrollIndicator={false}
-        removeClippedSubviews={true}
-        maxToRenderPerBatch={10}
-        windowSize={10}
-        initialNumToRender={5}
-      />
+        <FlatList
+          data={categories}
+          renderItem={renderCategoryItem}
+          keyExtractor={(item) => item}
+          contentContainerStyle={styles.categoriesContainer}
+          showsVerticalScrollIndicator={false}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={10}
+          windowSize={10}
+          initialNumToRender={5}
+        />
+      </TouchableScreenWrapper>
     </SafeAreaView>
   );
 }

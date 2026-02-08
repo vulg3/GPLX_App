@@ -46,6 +46,7 @@ export default function Exam() {
   const [timeRemaining, setTimeRemaining] = useState(examDuration);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
     // Generate exam: 25 questions for Motorbike (A), 30 questions for Car (B)
@@ -69,6 +70,22 @@ export default function Exam() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      const itemWidth = 40; // width of questionDot
+      const gap = 8; // gap in questionDotsContent
+      const padding = 16; // paddingHorizontal in questionDotsContainer
+      const availableWidth = width - padding * 2;
+
+      const x =
+        currentQuestionIndex * (itemWidth + gap) -
+        availableWidth / 2 +
+        itemWidth / 2;
+
+      scrollRef.current?.scrollTo({ x, animated: true });
+    }
+  }, [currentQuestionIndex]);
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -388,7 +405,7 @@ export default function Exam() {
               style={[
                 styles.navButtonWrapper,
                 currentQuestionIndex === examQuestions.length - 1 &&
-                  styles.navButtonDisabled,
+                styles.navButtonDisabled,
               ]}
               onPress={handleNext}
               disabled={currentQuestionIndex === examQuestions.length - 1}
@@ -407,7 +424,7 @@ export default function Exam() {
                   style={[
                     styles.navButtonText,
                     currentQuestionIndex === examQuestions.length - 1 &&
-                      styles.navButtonTextDisabled,
+                    styles.navButtonTextDisabled,
                   ]}
                 >
                   Câu sau ›
@@ -417,6 +434,7 @@ export default function Exam() {
           </View>
 
           <ScrollView
+            ref={scrollRef}
             horizontal
             showsHorizontalScrollIndicator={false}
             style={styles.questionDotsContainer}
@@ -437,8 +455,8 @@ export default function Exam() {
                       isCurrent
                         ? ["#007AFF", "#5856D6"]
                         : isAnswered
-                        ? ["#34C759", "#28a745"]
-                        : ["#f0f0f0", "#e0e0e0"]
+                          ? ["#34C759", "#28a745"]
+                          : ["#f0f0f0", "#e0e0e0"]
                     }
                     style={styles.questionDot}
                     start={{ x: 0, y: 0 }}
@@ -448,7 +466,7 @@ export default function Exam() {
                       style={[
                         styles.questionDotText,
                         (isAnswered || isCurrent) &&
-                          styles.questionDotTextActive,
+                        styles.questionDotTextActive,
                       ]}
                     >
                       {index + 1}

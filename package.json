@@ -7,7 +7,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "run-my-phone": "npx expo run:ios --device \"iPhone của Hậu 2\""
   },
   "jest": {
     "preset": "jest-expo"

@@ -150,7 +150,7 @@ export default function ReviewAnswers() {
                 {question.hinhanhq && (
                   <Image
                     source={{
-                      uri: `https://600cauhoigplx.com${question.hinhanhq}`,
+                      uri: `https://taplai.com${question.hinhanhq}`,
                     }}
                     style={styles.questionImage}
                     resizeMode="contain"
@@ -170,8 +170,8 @@ export default function ReviewAnswers() {
                           styles.answerItem,
                           isCorrectAnswer && styles.answerItemCorrect,
                           isUserSelected &&
-                            !isCorrectAnswer &&
-                            styles.answerItemWrong,
+                          !isCorrectAnswer &&
+                          styles.answerItemWrong,
                         ]}
                       >
                         <View style={styles.answerLeft}>
@@ -180,8 +180,8 @@ export default function ReviewAnswers() {
                               styles.answerIndicator,
                               isCorrectAnswer && styles.answerIndicatorCorrect,
                               isUserSelected &&
-                                !isCorrectAnswer &&
-                                styles.answerIndicatorWrong,
+                              !isCorrectAnswer &&
+                              styles.answerIndicatorWrong,
                             ]}
                           >
                             {isCorrectAnswer && (
@@ -196,8 +196,8 @@ export default function ReviewAnswers() {
                               styles.answerText,
                               isCorrectAnswer && styles.answerTextCorrect,
                               isUserSelected &&
-                                !isCorrectAnswer &&
-                                styles.answerTextWrong,
+                              !isCorrectAnswer &&
+                              styles.answerTextWrong,
                             ]}
                           >
                             {answer.text}

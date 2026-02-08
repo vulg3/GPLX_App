@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Dimensions,
   Image,
@@ -37,6 +37,23 @@ export default function QuestionList() {
     new Map()
   );
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const scrollRef = useRef<ScrollView>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      const itemWidth = 40; // width of questionDot
+      const gap = 8; // gap in questionDotsContent
+      const padding = 16; // paddingHorizontal in questionDotsContainer
+      const availableWidth = width - padding * 2;
+
+      const x =
+        currentQuestionIndex * (itemWidth + gap) -
+        availableWidth / 2 +
+        itemWidth / 2;
+
+      scrollRef.current?.scrollTo({ x, animated: true });
+    }
+  }, [currentQuestionIndex]);
 
   const handleAnswerSelect = (questionId: string, answerIndex: number) => {
     const newSelected = new Map(selectedAnswers);
@@ -83,20 +100,20 @@ export default function QuestionList() {
             },
           ],
           showResult &&
-            isCorrect && [
-              styles.answerCorrect,
-              {
-                backgroundColor: isDarkMode ? "#1e4620" : "#d4edda",
-              },
-            ],
+          isCorrect && [
+            styles.answerCorrect,
+            {
+              backgroundColor: isDarkMode ? "#1e4620" : "#d4edda",
+            },
+          ],
           showResult &&
-            isSelected &&
-            !isCorrect && [
-              styles.answerIncorrect,
-              {
-                backgroundColor: isDarkMode ? "#4a1a1a" : "#f8d7da",
-              },
-            ],
+          isSelected &&
+          !isCorrect && [
+            styles.answerIncorrect,
+            {
+              backgroundColor: isDarkMode ? "#4a1a1a" : "#f8d7da",
+            },
+          ],
         ]}
       >
         <View style={styles.answerLeft}>
@@ -107,9 +124,9 @@ export default function QuestionList() {
               isSelected && styles.answerIndicatorSelected,
               showResult && isCorrect && styles.answerIndicatorCorrect,
               showResult &&
-                isSelected &&
-                !isCorrect &&
-                styles.answerIndicatorIncorrect,
+              isSelected &&
+              !isCorrect &&
+              styles.answerIndicatorIncorrect,
             ]}
           >
             {isSelected && !showResult && (
@@ -127,9 +144,9 @@ export default function QuestionList() {
               isSelected && styles.answerTextSelected,
               showResult && isCorrect && styles.answerTextCorrect,
               showResult &&
-                isSelected &&
-                !isCorrect &&
-                styles.answerTextIncorrect,
+              isSelected &&
+              !isCorrect &&
+              styles.answerTextIncorrect,
             ]}
           >
             {answer.text}
@@ -323,7 +340,7 @@ export default function QuestionList() {
               style={[
                 styles.navButtonWrapper,
                 currentQuestionIndex === questions.length - 1 &&
-                  styles.navButtonDisabled,
+                styles.navButtonDisabled,
               ]}
               onPress={handleNext}
               disabled={currentQuestionIndex === questions.length - 1}
@@ -342,7 +359,7 @@ export default function QuestionList() {
                   style={[
                     styles.navButtonText,
                     currentQuestionIndex === questions.length - 1 &&
-                      styles.navButtonTextDisabled,
+                    styles.navButtonTextDisabled,
                   ]}
                 >
                   Câu sau ›
@@ -352,6 +369,7 @@ export default function QuestionList() {
           </View>
 
           <ScrollView
+            ref={scrollRef}
             horizontal
             showsHorizontalScrollIndicator={false}
             style={styles.questionDotsContainer}
@@ -372,10 +390,10 @@ export default function QuestionList() {
                       isCurrent
                         ? ["#007AFF", "#5856D6"]
                         : isAnswered
-                        ? ["#34C759", "#28a745"]
-                        : isDarkMode
-                        ? [colors.card, colors.background]
-                        : ["#f0f0f0", "#e0e0e0"]
+                          ? ["#34C759", "#28a745"]
+                          : isDarkMode
+                            ? [colors.card, colors.background]
+                            : ["#f0f0f0", "#e0e0e0"]
                     }
                     style={styles.questionDot}
                     start={{ x: 0, y: 0 }}
@@ -389,8 +407,8 @@ export default function QuestionList() {
                             isAnswered || isCurrent
                               ? "#fff"
                               : isDarkMode
-                              ? colors.text
-                              : "#666",
+                                ? colors.text
+                                : "#666",
                         },
                       ]}
                     >

@@ -15,28 +15,33 @@ export const AdTouchProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const touchCountRef = useRef(0);
   const targetTouchCountRef = useRef(
-    Math.floor(Math.random() * 51) + 100 // Random between 100-150
+    Math.floor(Math.random() * 51) + 50 // Random between 100-150
   );
   const { adsHidden } = useAdsVisibility();
 
+
   const handleTouch = () => {
-    // Don't track touches if ads are hidden
     if (adsHidden) {
       return;
     }
 
     touchCountRef.current += 1;
+    console.log(
+      "Touch count:",
+      touchCountRef.current,
+      "Target:",
+      targetTouchCountRef.current
+    );
 
     if (touchCountRef.current >= targetTouchCountRef.current) {
+      console.log("Showing interstitial ad...");
       // Show interstitial ad
       AdMobService.showInterstitialAd(() => {
         // Reset counter and set new random target
         touchCountRef.current = 0;
         targetTouchCountRef.current = Math.floor(Math.random() * 51) + 100;
-        console.log(
-          `Next ad will show after ${targetTouchCountRef.current} touches`
-        );
-      }); //FIXME
+        console.log("Ad shown. Counter reset. New target:", targetTouchCountRef.current);
+      });
     }
   };
 

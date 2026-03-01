@@ -2,7 +2,7 @@
   "expo": {
     "name": "Lý thuyết giao thông",
     "slug": "lythuyetgiaothong",
-    "version": "1.2",
+    "version": "1.3",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "scheme": "gplxapp",

@@ -13,7 +13,7 @@ const ADMOB_UNIT_IDS = {
     ios: __DEV__ ? TestIds.BANNER : "ca-app-pub-2615112087856757/2078023797",
     android: __DEV__
       ? TestIds.BANNER
-      : "ca-app-pub-2615112087856757~4950144509",
+      : "ca-app-pub-2615112087856757/8422485653",
   },
   interstitial: {
     ios: __DEV__
@@ -21,7 +21,7 @@ const ADMOB_UNIT_IDS = {
       : "ca-app-pub-2615112087856757/7138778786",
     android: __DEV__
       ? TestIds.INTERSTITIAL
-      : "ca-app-pub-2615112087856757~4950144509",
+      : "ca-app-pub-2615112087856757/5796322315",
   },
 };
 
@@ -79,7 +79,7 @@ class AdMobService {
       () => {
         this.isInterstitialLoaded = true;
         console.log("Interstitial ad loaded");
-      }
+      },
     );
 
     const unsubscribeClosed = this.interstitialAd.addAdEventListener(
@@ -89,7 +89,7 @@ class AdMobService {
         // Preload next ad
         this.isInterstitialLoaded = false;
         this.loadInterstitialAd();
-      }
+      },
     );
 
     const unsubscribeError = this.interstitialAd.addAdEventListener(
@@ -97,7 +97,7 @@ class AdMobService {
       (error) => {
         console.error("Interstitial ad error:", error);
         this.isInterstitialLoaded = false;
-      }
+      },
     );
 
     // Load the ad

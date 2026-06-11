@@ -21,12 +21,15 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   ConfettiEffect,
   PressableScale,
   TouchableScreenWrapper,
 } from "../components";
+import { useTheme } from "../contexts/ThemeContext";
+import { gradients } from "../theme/tokens";
+import { haptics } from "../utils/haptics";
 import { ExamResult as ExamResultType } from "../types/Question";
 
 const { width } = Dimensions.get("window");
@@ -34,7 +37,9 @@ const { width } = Dimensions.get("window");
 export default function ExamResult() {
   const route = useRoute();
   const navigation = useNavigation();
+  const { colors, isDarkMode } = useTheme();
   const { examResult } = route.params as { examResult: ExamResultType };
+  const { bottom } = useSafeAreaInsets();
   const [showConfetti, setShowConfetti] = useState(false);
 
   const correctCount = examResult.answers.filter((a) => a.isCorrect).length;
@@ -50,8 +55,11 @@ export default function ExamResult() {
 
   useEffect(() => {
     if (examResult.passed) {
+      haptics.success();
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 4000);
+    } else {
+      haptics.error();
     }
 
     // Animate score
@@ -93,15 +101,21 @@ export default function ExamResult() {
 
   return (
     <TouchableScreenWrapper>
-      <SafeAreaView style={styles.container} edges={["top"]}>
-        <StatusBar barStyle="dark-content" backgroundColor="#f8f9fa" />
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: colors.background }]}
+        edges={["top"]}
+      >
+        <StatusBar
+          barStyle={isDarkMode ? "light-content" : "dark-content"}
+          backgroundColor={colors.background}
+        />
         {showConfetti && examResult.passed && <ConfettiEffect />}
 
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
           {/* Result Card */}
           <Animated.View
             entering={FadeInDown.duration(600).springify()}
-            style={styles.resultCard}
+            style={[styles.resultCard, { backgroundColor: colors.card }]}
           >
             {examResult.passed ? (
               <>
@@ -110,7 +124,7 @@ export default function ExamResult() {
                   style={[styles.passIcon, rotateStyle]}
                 >
                   <LinearGradient
-                    colors={["#34C759", "#28a745"]}
+                    colors={gradients.success}
                     style={styles.iconGradient}
                   >
                     <Text style={styles.passIconText}>🎉</Text>
@@ -118,13 +132,13 @@ export default function ExamResult() {
                 </Animated.View>
                 <Animated.Text
                   entering={FadeInUp.delay(400)}
-                  style={styles.resultTitle}
+                  style={[styles.resultTitle, { color: colors.text }]}
                 >
                   Chúc mừng!
                 </Animated.Text>
                 <Animated.Text
                   entering={FadeInUp.delay(500)}
-                  style={styles.resultSubtitle}
+                  style={[styles.resultSubtitle, { color: colors.subText }]}
                 >
                   Bạn đã đạt yêu cầu
                 </Animated.Text>
@@ -136,7 +150,7 @@ export default function ExamResult() {
                   style={styles.failIcon}
                 >
                   <LinearGradient
-                    colors={["#FF3B30", "#dc2626"]}
+                    colors={gradients.danger}
                     style={styles.iconGradient}
                   >
                     <Text style={styles.failIconText}>😔</Text>
@@ -144,13 +158,13 @@ export default function ExamResult() {
                 </Animated.View>
                 <Animated.Text
                   entering={FadeInUp.delay(400)}
-                  style={styles.resultTitle}
+                  style={[styles.resultTitle, { color: colors.text }]}
                 >
                   Chưa đạt
                 </Animated.Text>
                 <Animated.Text
                   entering={FadeInUp.delay(500)}
-                  style={styles.resultSubtitle}
+                  style={[styles.resultSubtitle, { color: colors.subText }]}
                 >
                   {hasCriticalError
                     ? "Bạn đã sai câu điểm liệt"
@@ -171,34 +185,50 @@ export default function ExamResult() {
               >
                 {examResult.score}
               </Text>
-              <Text style={styles.scoreLabel}>điểm</Text>
+              <Text style={[styles.scoreLabel, { color: colors.subText }]}>
+                điểm
+              </Text>
             </Animated.View>
 
-            <View style={styles.statsRow}>
+            <View style={[styles.statsRow, { borderTopColor: colors.border }]}>
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>{correctCount}</Text>
-                <Text style={styles.statLabel}>Đúng</Text>
+                <Text style={[styles.statValue, { color: colors.success }]}>
+                  {correctCount}
+                </Text>
+                <Text style={[styles.statLabel, { color: colors.subText }]}>
+                  Đúng
+                </Text>
               </View>
-              <View style={styles.statDivider} />
+              <View
+                style={[styles.statDivider, { backgroundColor: colors.border }]}
+              />
               <View style={styles.statItem}>
-                <Text style={[styles.statValue, { color: "#FF3B30" }]}>
+                <Text style={[styles.statValue, { color: colors.error }]}>
                   {incorrectCount}
                 </Text>
-                <Text style={styles.statLabel}>Sai</Text>
+                <Text style={[styles.statLabel, { color: colors.subText }]}>
+                  Sai
+                </Text>
               </View>
-              <View style={styles.statDivider} />
+              <View
+                style={[styles.statDivider, { backgroundColor: colors.border }]}
+              />
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>
+                <Text style={[styles.statValue, { color: colors.text }]}>
                   {examResult.totalQuestions}
                 </Text>
-                <Text style={styles.statLabel}>Tổng</Text>
+                <Text style={[styles.statLabel, { color: colors.subText }]}>
+                  Tổng
+                </Text>
               </View>
             </View>
 
             {hasCriticalError && (
-              <View style={styles.warningBox}>
+              <View
+                style={[styles.warningBox, { backgroundColor: colors.warningBg }]}
+              >
                 <Text style={styles.warningIcon}>⚠️</Text>
-                <Text style={styles.warningText}>
+                <Text style={[styles.warningText, { color: colors.warning }]}>
                   Bạn đã sai câu điểm liệt. Để đạt yêu cầu, bạn không được sai
                   bất kỳ câu điểm liệt nào.
                 </Text>
@@ -207,53 +237,64 @@ export default function ExamResult() {
           </Animated.View>
 
           {/* Info Card */}
-          <View style={styles.infoCard}>
+          <View style={[styles.infoCard, { backgroundColor: colors.card }]}>
             <View style={styles.infoItem}>
-              <Text style={styles.infoLabel}>Loại bằng</Text>
-              <Text style={styles.infoValue}>
+              <Text style={[styles.infoLabel, { color: colors.subText }]}>
+                Loại bằng
+              </Text>
+              <Text style={[styles.infoValue, { color: colors.text }]}>
                 {examResult.licenseType === "A" ? "A / A1" : "B / B1"}
               </Text>
             </View>
-            <View style={styles.infoDivider} />
+            <View
+              style={[styles.infoDivider, { backgroundColor: colors.border }]}
+            />
             <View style={styles.infoItem}>
-              <Text style={styles.infoLabel}>Thời gian</Text>
-              <Text style={styles.infoValue}>
+              <Text style={[styles.infoLabel, { color: colors.subText }]}>
+                Thời gian
+              </Text>
+              <Text style={[styles.infoValue, { color: colors.text }]}>
                 {new Date(examResult.date).toLocaleString("vi-VN")}
               </Text>
             </View>
           </View>
 
           {/* Tips Card */}
-          <View style={styles.tipsCard}>
-            <Text style={styles.tipsTitle}>
+          <View
+            style={[
+              styles.tipsCard,
+              { backgroundColor: colors.infoBg, borderLeftColor: colors.info },
+            ]}
+          >
+            <Text style={[styles.tipsTitle, { color: colors.info }]}>
               {examResult.passed ? "✅ Điều cần biết" : "💪 Lời khuyên"}
             </Text>
             {examResult.passed ? (
               <>
-                <Text style={styles.tipText}>
+                <Text style={[styles.tipText, { color: colors.text }]}>
                   • Bạn đã hoàn thành bài thi với kết quả tốt
                 </Text>
-                <Text style={styles.tipText}>
+                <Text style={[styles.tipText, { color: colors.text }]}>
                   • Xem lại đáp án để củng cố kiến thức
                 </Text>
-                <Text style={styles.tipText}>
+                <Text style={[styles.tipText, { color: colors.text }]}>
                   • Tiếp tục ôn tập để chuẩn bị cho kỳ thi chính thức
                 </Text>
               </>
             ) : (
               <>
-                <Text style={styles.tipText}>
+                <Text style={[styles.tipText, { color: colors.text }]}>
                   {examResult.licenseType === "B"
                     ? "• Cần đúng ít nhất 27/30 câu (90%) để đạt"
                     : "• Cần đúng ít nhất 21/25 câu (84%) để đạt"}
                 </Text>
-                <Text style={styles.tipText}>
+                <Text style={[styles.tipText, { color: colors.text }]}>
                   • Không được sai bất kỳ câu điểm liệt nào
                 </Text>
-                <Text style={styles.tipText}>
+                <Text style={[styles.tipText, { color: colors.text }]}>
                   • Xem lại đáp án và giải thích để hiểu rõ hơn
                 </Text>
-                <Text style={styles.tipText}>
+                <Text style={[styles.tipText, { color: colors.text }]}>
                   • Ôn tập kỹ các phần còn yếu và thử lại
                 </Text>
               </>
@@ -266,11 +307,18 @@ export default function ExamResult() {
         {/* Action Buttons */}
         <Animated.View
           entering={FadeInUp.delay(800)}
-          style={styles.actionButtons}
+          style={[
+            styles.actionButtons,
+            {
+              backgroundColor: colors.card,
+              borderTopColor: colors.border,
+              paddingBottom: bottom + 16,
+            },
+          ]}
         >
-          <PressableScale style={styles.actionButtonWrapper}>
+          <PressableScale style={styles.actionButtonWrapper} haptic>
             <LinearGradient
-              colors={["#007AFF", "#5856D6"]}
+              colors={gradients.info}
               style={[styles.actionButton, styles.reviewButton]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
@@ -287,7 +335,7 @@ export default function ExamResult() {
           <View style={styles.secondaryButtons}>
             <PressableScale style={[styles.actionButtonWrapper, { flex: 1 }]}>
               <LinearGradient
-                colors={["#34C759", "#28a745"]}
+                colors={gradients.success}
                 style={[styles.actionButton, styles.retakeButton]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
@@ -302,12 +350,20 @@ export default function ExamResult() {
             </PressableScale>
 
             <PressableScale style={[styles.actionButtonWrapper, { flex: 1 }]}>
-              <View style={[styles.actionButton, styles.homeButton]}>
+              <View
+                style={[
+                  styles.actionButton,
+                  styles.homeButton,
+                  { backgroundColor: colors.background },
+                ]}
+              >
                 <PressableScale
                   onPress={handleHome}
                   style={styles.actionButtonInner}
                 >
-                  <Text style={styles.homeButtonText}>🏠 Trang chủ</Text>
+                  <Text style={[styles.homeButtonText, { color: colors.text }]}>
+                    🏠 Trang chủ
+                  </Text>
                 </PressableScale>
               </View>
             </PressableScale>
@@ -498,7 +554,6 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: "#fff",
     padding: 16,
-    paddingBottom: 32,
     borderTopWidth: 1,
     borderTopColor: "#e0e0e0",
     gap: 12,

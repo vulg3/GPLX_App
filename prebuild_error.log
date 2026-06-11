@@ -1,0 +1,20 @@
+- Creating native directory (./ios)
+✔ Created native directory | reusing /ios
+- Updating package.json
+› Using react-native@0.79.5 instead of recommended react-native@0.79.6.
+- Updating package.json
+✔ Updated package.json | no changes
+- Running prebuild
+✖ Prebuild failed
+Error: [ios.dangerous]: withIosDangerousBaseMod: EACCES: permission denied, open '/Users/lehau/Code/Freelance/GPLX_App/ios/Pods/fmt/include/fmt/format-inl.h'
+Error: [ios.dangerous]: withIosDangerousBaseMod: EACCES: permission denied, open '/Users/lehau/Code/Freelance/GPLX_App/ios/Pods/fmt/include/fmt/format-inl.h'
+    at Object.writeFileSync (node:fs:2391:20)
+    at /Users/lehau/Code/Freelance/GPLX_App/plugins/withFmtFix.js:51:14
+    at action (/Users/lehau/Code/Freelance/GPLX_App/node_modules/@expo/config-plugins/build/plugins/withMod.js:199:29)
+    at interceptingMod (/Users/lehau/Code/Freelance/GPLX_App/node_modules/@expo/config-plugins/build/plugins/withMod.js:104:27)
+    at action (/Users/lehau/Code/Freelance/GPLX_App/node_modules/@expo/config-plugins/build/plugins/withMod.js:204:14)
+    at async interceptingMod (/Users/lehau/Code/Freelance/GPLX_App/node_modules/@expo/config-plugins/build/plugins/withMod.js:104:21)
+    at async interceptingMod (/Users/lehau/Code/Freelance/GPLX_App/node_modules/@expo/config-plugins/build/plugins/withMod.js:104:21)
+    at async interceptingMod (/Users/lehau/Code/Freelance/GPLX_App/node_modules/@expo/config-plugins/build/plugins/withMod.js:104:21)
+    at async action (/Users/lehau/Code/Freelance/GPLX_App/node_modules/@expo/config-plugins/build/plugins/createBaseMod.js:60:21)
+    at async interceptingMod (/Users/lehau/Code/Freelance/GPLX_App/node_modules/@expo/config-plugins/build/plugins/withMod.js:104:21)

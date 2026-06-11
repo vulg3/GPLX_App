@@ -1,12 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React, { useEffect } from "react";
-import { Platform, Text, View } from "react-native";
+import { Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TouchableScreenWrapper } from "../components/TouchableScreenWrapper";
 import { useTheme } from "../contexts/ThemeContext";
 import CarTab from "../screens/CarTab";
 import MotorbikeTab from "../screens/MotorbikeTab";
 import Settings from "../screens/Settings";
+import AnalyticsDashboard from "../screens/AnalyticsDashboard";
 import AdMobService from "../services/AdMobService";
 import { responsive, rv } from "../utils/responsive";
 import { AdBanner } from "@/components";
@@ -23,6 +25,7 @@ export default function MainTabs() {
 
   // Custom tab bar with AdBanner above it
   const CustomTabBar = (props: any) => {
+    const { bottom: bottomInset } = useSafeAreaInsets();
     return (
       <View>
         {/* Banner Ad above the bottom tab */}
@@ -30,8 +33,8 @@ export default function MainTabs() {
         {/* Custom tab bar */}
         <View
           style={{
-            height: Platform.OS === "ios" ? rv(88, 100) : rv(70, 80),
-            paddingBottom: Platform.OS === "ios" ? rv(20, 24) : rv(18, 20),
+            height: rv(64, 76) + bottomInset,
+            paddingBottom: bottomInset + rv(6, 8),
             paddingTop: rv(8, 12),
             backgroundColor: colors.card,
             borderTopWidth: 1,
@@ -68,6 +71,8 @@ export default function MainTabs() {
               iconName = "bicycle";
             } else if (route.name === "CarTab") {
               iconName = isFocused ? "car-sport" : "car-sport-outline";
+            } else if (route.name === "Analytics") {
+                iconName = isFocused ? "stats-chart" : "stats-chart-outline";
             } else if (route.name === "Settings") {
               iconName = isFocused ? "settings" : "settings-outline";
             }
@@ -124,6 +129,8 @@ export default function MainTabs() {
               iconName = "bicycle";
             } else if (route.name === "CarTab") {
               iconName = focused ? "car-sport" : "car-sport-outline";
+            } else if (route.name === "Analytics") {
+                iconName = focused ? "stats-chart" : "stats-chart-outline";
             } else if (route.name === "Settings") {
               iconName = focused ? "settings" : "settings-outline";
             }
@@ -146,6 +153,13 @@ export default function MainTabs() {
           component={CarTab}
           options={{
             tabBarLabel: "Ô tô",
+          }}
+        />
+        <Tab.Screen
+          name="Analytics"
+          component={AnalyticsDashboard}
+          options={{
+            tabBarLabel: "Thống kê",
           }}
         />
         <Tab.Screen

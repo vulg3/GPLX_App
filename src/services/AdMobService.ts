@@ -1,4 +1,5 @@
 import { Platform } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import mobileAds, {
   AdEventType,
   BannerAdSize,
@@ -6,6 +7,11 @@ import mobileAds, {
   TestIds,
 } from "react-native-google-mobile-ads";
 import { getAdsHidden } from "../utils/storage";
+
+// Minimum gap between interstitials so they only appear at natural breaks and
+// never back-to-back (e.g. retaking an exam quickly).
+const LAST_INTERSTITIAL_KEY = "LAST_INTERSTITIAL_AT";
+const MIN_INTERSTITIAL_INTERVAL_MS = 3 * 60 * 1000;
 
 // Replace these with your actual AdMob unit IDs
 const ADMOB_UNIT_IDS = {
@@ -118,8 +124,16 @@ class AdMobService {
         return;
       }
 
+      // Frequency cap: skip if we showed one too recently.
+      if (await this.isInterstitialOnCooldown()) {
+        console.log("Interstitial on cooldown, skipping");
+        if (callback) callback();
+        return;
+      }
+
       if (this.interstitialAd && this.isInterstitialLoaded) {
         await this.interstitialAd.show();
+        await AsyncStorage.setItem(LAST_INTERSTITIAL_KEY, Date.now().toString());
         if (callback) callback();
       } else {
         console.log("Interstitial ad not ready yet");
@@ -138,6 +152,16 @@ class AdMobService {
    */
   isInterstitialReady(): boolean {
     return this.isInterstitialLoaded;
+  }
+
+  private async isInterstitialOnCooldown(): Promise<boolean> {
+    try {
+      const last = await AsyncStorage.getItem(LAST_INTERSTITIAL_KEY);
+      if (!last) return false;
+      return Date.now() - parseInt(last, 10) < MIN_INTERSTITIAL_INTERVAL_MS;
+    } catch {
+      return false;
+    }
   }
 }
 

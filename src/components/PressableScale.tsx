@@ -5,17 +5,21 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
+import { haptics, HapticType } from "../utils/haptics";
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 interface PressableScaleProps extends TouchableOpacityProps {
   children: React.ReactNode;
   scale?: number;
+  /** Trigger haptic feedback on press-in. `true` => light impact. */
+  haptic?: boolean | HapticType;
 }
 
 export default function PressableScale({
   children,
   scale = 0.95,
+  haptic,
   onPressIn,
   onPressOut,
   ...props
@@ -31,6 +35,9 @@ export default function PressableScale({
       damping: 15,
       stiffness: 300,
     });
+    if (haptic) {
+      haptics[haptic === true ? "light" : haptic]();
+    }
     onPressIn?.(event);
   };
 

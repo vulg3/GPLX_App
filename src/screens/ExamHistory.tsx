@@ -9,21 +9,44 @@ import {
   Text,
   View,
 } from "react-native";
-import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
+import Animated, { FadeInRight } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { PressableScale, TouchableScreenWrapper } from "../components";
+import {
+  AdBanner,
+  EmptyState,
+  PressableScale,
+  TouchableScreenWrapper,
+} from "../components";
+import { useAdsVisibility } from "../contexts/AdsVisibilityContext";
 import { useTheme } from "../contexts/ThemeContext";
 import { ExamResult, LicenseType } from "../types/Question";
 import { isTablet, responsive, rs, rv } from "../utils/responsive";
 import { deleteExamResult, getExamResultsByLicense } from "../utils/storage";
 
+// Inject a banner ad after every N history rows so it reads as part of the list
+// instead of an interrupting popup.
+const AD_INTERVAL = 4;
+type HistoryRow =
+  | { type: "item"; result: ExamResult }
+  | { type: "ad"; key: string };
+
 export default function ExamHistory() {
   const route = useRoute();
   const navigation = useNavigation();
   const { isDarkMode, colors } = useTheme();
+  const { adsHidden } = useAdsVisibility();
   const { licenseType } = route.params as { licenseType: LicenseType };
 
   const [results, setResults] = useState<ExamResult[]>([]);
+
+  // Build the list rows with banner ads interleaved (unless ads are hidden).
+  const listData: HistoryRow[] = [];
+  results.forEach((result, i) => {
+    listData.push({ type: "item", result });
+    if (!adsHidden && (i + 1) % AD_INTERVAL === 0 && i !== results.length - 1) {
+      listData.push({ type: "ad", key: `ad-${i}` });
+    }
+  });
 
   useEffect(() => {
     loadResults();
@@ -53,12 +76,12 @@ export default function ExamHistory() {
     ]);
   };
 
-  const renderItem = ({ item, index }: { item: ExamResult; index: number }) => {
+  const renderResultCard = (item: ExamResult, index: number) => {
     const date = new Date(item.date);
     const correctCount = item.answers.filter((a) => a.isCorrect).length;
 
     return (
-      <Animated.View entering={FadeInRight.delay(index * 100).springify()}>
+      <Animated.View entering={FadeInRight.delay(Math.min(index, 6) * 80).springify()}>
         <PressableScale
           style={styles.resultCardWrapper}
           onPress={() => handleViewResult(item)}
@@ -167,6 +190,17 @@ export default function ExamHistory() {
     );
   };
 
+  const renderRow = ({ item, index }: { item: HistoryRow; index: number }) => {
+    if (item.type === "ad") {
+      return (
+        <View style={[styles.adCard, { backgroundColor: colors.card }]}>
+          <AdBanner />
+        </View>
+      );
+    }
+    return renderResultCard(item.result, index);
+  };
+
   return (
     <TouchableScreenWrapper>
       <SafeAreaView
@@ -204,28 +238,22 @@ export default function ExamHistory() {
         </LinearGradient>
 
         {results.length === 0 ? (
-          <Animated.View
-            entering={FadeInDown.duration(800).springify()}
-            style={styles.emptyContainer}
-          >
-            <LinearGradient
-              colors={["#667eea20", "#764ba220"]}
-              style={styles.emptyIconContainer}
-            >
-              <Text style={styles.emptyIcon}>📝</Text>
-            </LinearGradient>
-            <Text style={[styles.emptyTitle, { color: colors.text }]}>
-              Chưa có lịch sử thi
-            </Text>
-            <Text style={[styles.emptyText, { color: colors.subText }]}>
-              Bắt đầu làm bài thi thử để xem kết quả tại đây
-            </Text>
-          </Animated.View>
+          <View style={styles.emptyContainer}>
+            <EmptyState
+              icon="document-text-outline"
+              title="Chưa có lịch sử thi"
+              description="Bắt đầu làm bài thi thử để xem kết quả tại đây."
+              ctaLabel="Thi thử ngay"
+              onPressCta={() => navigation.goBack()}
+            />
+          </View>
         ) : (
           <FlatList
-            data={results}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
+            data={listData}
+            renderItem={renderRow}
+            keyExtractor={(item) =>
+              item.type === "ad" ? item.key : item.result.id
+            }
             contentContainerStyle={styles.list}
             showsVerticalScrollIndicator={false}
           />
@@ -384,6 +412,15 @@ const styles = StyleSheet.create({
     fontSize: isTablet ? 16 : 14,
     color: "#007AFF",
     fontWeight: "600",
+  },
+  adCard: {
+    marginBottom: responsive.spacing.base,
+    borderRadius: responsive.radius.lg,
+    paddingVertical: responsive.padding.sm,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+    minHeight: 60,
   },
   emptyContainer: {
     flex: 1,

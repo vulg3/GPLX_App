@@ -17,7 +17,7 @@ import Animated, {
   FadeInUp,
   ZoomIn,
 } from "react-native-reanimated";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   AnimatedProgressBar,
   LoadingSpinner,
@@ -27,6 +27,10 @@ import {
 import { ExamResult, LicenseType, Question } from "../types/Question";
 import { calculateScore, generateExam } from "../utils/examGenerator";
 import { saveExamResult } from "../utils/storage";
+import { recordStudyActivity } from "../utils/streak";
+import { addWrongQuestions } from "../utils/wrongQuestions";
+import { refreshReminder } from "../utils/notifications";
+import AdMobService from "../services/AdMobService";
 
 const { width } = Dimensions.get("window");
 
@@ -47,6 +51,7 @@ export default function Exam() {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const scrollRef = useRef<ScrollView>(null);
+  const { bottom } = useSafeAreaInsets();
 
   useEffect(() => {
     // Generate exam: 25 questions for Motorbike (A), 30 questions for Car (B)
@@ -166,19 +171,35 @@ export default function Exam() {
 
     await saveExamResult(examResult);
 
+    // Record study activity for streak + refresh the streak-based reminder.
+    await recordStudyActivity(examResult.totalQuestions);
+    refreshReminder();
+
+    // Collect missed questions into the "Câu hay sai" review bank.
+    const wrongQuestions = examQuestions.filter((q) => {
+      const answer = examResult.answers.find(
+        (a) => a.questionId === q._id.$oid
+      );
+      // Unanswered or incorrect both count as "wrong" to review.
+      return !answer || !answer.isCorrect;
+    });
+    await addWrongQuestions(licenseType, wrongQuestions);
+
+    const goToResult = () => {
+      // Interstitial at a natural break point (after finishing, before result),
+      // rate-limited inside AdMobService so it never feels spammy.
+      AdMobService.showInterstitialAd(() => {
+        // @ts-ignore - Navigation types not properly configured
+        navigation.navigate("ExamResult", { examResult });
+      });
+    };
+
     if (timeUp) {
       Alert.alert("Hết giờ", "Thời gian làm bài đã hết!", [
-        {
-          text: "Xem kết quả",
-          onPress: () => {
-            // @ts-ignore - Navigation types not properly configured
-            navigation.navigate("ExamResult", { examResult });
-          },
-        },
+        { text: "Xem kết quả", onPress: goToResult },
       ]);
     } else {
-      // @ts-ignore - Navigation types not properly configured
-      navigation.navigate("ExamResult", { examResult });
+      goToResult();
     }
   };
 
@@ -370,7 +391,7 @@ export default function Exam() {
         </ScrollView>
 
         {/* Navigation */}
-        <View style={styles.navigation}>
+        <View style={[styles.navigation, { paddingBottom: 8 + bottom }]}>
           <View style={styles.navigationButtons}>
             <PressableScale
               style={[
@@ -749,7 +770,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderTopWidth: 1,
     borderTopColor: "#e0e0e0",
-    paddingBottom: 8,
   },
   navigationButtons: {
     flexDirection: "row",

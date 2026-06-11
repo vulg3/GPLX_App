@@ -1,6 +1,6 @@
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   ScrollView,
@@ -14,11 +14,12 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { AnimatedCard, PressableScale } from "../components";
+import { AnimatedCard, PressableScale, StreakCard } from "../components";
 import { useTheme } from "../contexts/ThemeContext";
 import { Question } from "../types/Question";
 import { responsive, rv } from "../utils/responsive";
 import { getStatistics, saveSelectedLicense } from "../utils/storage";
+import { getWrongCount } from "../utils/wrongQuestions";
 
 // Import JSON data
 import carQuestions from "../../assets/data/shlx.car_questions.json";
@@ -27,6 +28,7 @@ export default function CarTab() {
   const navigation = useNavigation();
   const { isDarkMode, colors } = useTheme();
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [wrongCount, setWrongCount] = useState(0);
   const [stats, setStats] = useState({
     totalExams: 0,
     passedExams: 0,
@@ -39,6 +41,14 @@ export default function CarTab() {
     loadData();
   }, []);
 
+  // Refresh stats / wrong-count whenever the tab regains focus.
+  useFocusEffect(
+    useCallback(() => {
+      getStatistics("B").then(setStats);
+      getWrongCount("B").then(setWrongCount);
+    }, [])
+  );
+
   const loadData = async () => {
     // Set license type to B
     await saveSelectedLicense("B");
@@ -49,6 +59,7 @@ export default function CarTab() {
     // Load statistics
     const statistics = await getStatistics("B");
     setStats(statistics);
+    setWrongCount(await getWrongCount("B"));
   };
 
   const handleStudy = () => {
@@ -88,37 +99,45 @@ export default function CarTab() {
     });
   };
 
+  const handleWrongQuestions = () => {
+    // @ts-ignore - Navigation types not properly configured
+    navigation.navigate("CommonlyWrongQuestion", { licenseType: "B" });
+  };
+
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}
-      edges={["top"]}
+      edges={[]}
     >
       <StatusBar barStyle="light-content" backgroundColor="#f093fb" />
+      {/* Header */}
+      <LinearGradient
+        colors={["#f093fb", "#f5576c"]}
+        style={[styles.header, { paddingTop: top }]}
+      >
+        <Animated.View entering={FadeInDown.duration(600).springify()}>
+          <View style={styles.headerTop}>
+            <View>
+              <Text style={styles.greeting}>Ô tô 🚗</Text>
+              <Text style={styles.licenseText}>
+                Bằng lái: <Text style={styles.licenseBold}>B / B1</Text>
+              </Text>
+            </View>
+          </View>
+          <Text style={styles.questionCount}>
+            📚 Tổng số:{" "}
+            <Text style={styles.questionCountBold}>{questions.length}</Text>{" "}
+            câu hỏi
+          </Text>
+        </Animated.View>
+      </LinearGradient>
+
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <LinearGradient
-          colors={["#f093fb", "#f5576c"]}
-          style={[styles.header, { paddingTop: top }]}
-        >
-          <Animated.View entering={FadeInDown.duration(600).springify()}>
-            <View style={styles.headerTop}>
-              <View>
-                <Text style={styles.greeting}>Ô tô 🚗</Text>
-                <Text style={styles.licenseText}>
-                  Bằng lái: <Text style={styles.licenseBold}>B / B1</Text>
-                </Text>
-              </View>
-            </View>
-            <Text style={styles.questionCount}>
-              📚 Tổng số:{" "}
-              <Text style={styles.questionCountBold}>{questions.length}</Text>{" "}
-              câu hỏi
-            </Text>
-          </Animated.View>
-        </LinearGradient>
+        {/* Streak + daily goal */}
+        <StreakCard delay={50} />
 
         {/* Statistics */}
         {stats.totalExams > 0 && (
@@ -280,6 +299,38 @@ export default function CarTab() {
                   </Text>
                 </View>
                 <Text style={styles.actionArrow}>›</Text>
+              </LinearGradient>
+            </PressableScale>
+          </AnimatedCard>
+
+          <AnimatedCard delay={450}>
+            <PressableScale
+              style={styles.actionCardInner}
+              onPress={handleWrongQuestions}
+              haptic
+            >
+              <LinearGradient
+                colors={["#FF3B30", "#dc2626"]}
+                style={styles.actionGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+              >
+                <View style={styles.actionIcon}>
+                  <Text style={styles.actionIconText}>🔁</Text>
+                </View>
+                <View style={styles.actionContent}>
+                  <Text style={styles.actionTitle}>Câu hay sai</Text>
+                  <Text style={styles.actionDescription}>
+                    Ôn lại những câu bạn từng trả lời sai
+                  </Text>
+                </View>
+                {wrongCount > 0 ? (
+                  <View style={styles.countBadge}>
+                    <Text style={styles.countBadgeText}>{wrongCount}</Text>
+                  </View>
+                ) : (
+                  <Text style={styles.actionArrow}>›</Text>
+                )}
               </LinearGradient>
             </PressableScale>
           </AnimatedCard>
@@ -490,6 +541,21 @@ const styles = StyleSheet.create({
     color: "#fff",
     marginLeft: 8,
     opacity: 0.7,
+  },
+  countBadge: {
+    minWidth: 28,
+    height: 28,
+    borderRadius: 14,
+    paddingHorizontal: 8,
+    backgroundColor: "rgba(255,255,255,0.3)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 8,
+  },
+  countBadgeText: {
+    color: "#fff",
+    fontSize: responsive.fontSize.base,
+    fontWeight: "bold",
   },
   tipsContainer: {
     margin: responsive.spacing.base,

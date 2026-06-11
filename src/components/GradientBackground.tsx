@@ -3,7 +3,7 @@ import React from "react";
 import { StyleSheet } from "react-native";
 
 interface GradientBackgroundProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   colors?: string[];
 }
 

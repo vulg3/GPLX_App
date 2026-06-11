@@ -4,11 +4,11 @@ import TermsOfUse from "@/screens/TermsOfUse";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
-import { AdTouchProvider } from "./src/contexts/AdTouchContext";
 import { AdsVisibilityProvider } from "./src/contexts/AdsVisibilityContext";
 import { ThemeProvider } from "./src/contexts/ThemeContext";
 import MainTabs from "./src/navigation/MainTabs";
 import {
+  CommonlyWrongQuestion,
   Exam,
   ExamHistory,
   ExamResult,
@@ -20,6 +20,10 @@ import {
   WebViewScreen,
 } from "./src/screens";
 import { getSelectedLicense } from "./src/utils/storage";
+import {
+  configureNotifications,
+  refreshReminder,
+} from "./src/utils/notifications";
 
 const Stack = createStackNavigator();
 
@@ -28,6 +32,9 @@ function AppNavigator() {
 
   useEffect(() => {
     checkInitialRoute();
+    // Keep the streak reminder in sync (re-arms daily notification if enabled).
+    configureNotifications();
+    refreshReminder();
   }, []);
 
   const checkInitialRoute = async () => {
@@ -100,6 +107,11 @@ function AppNavigator() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
+          name="CommonlyWrongQuestion"
+          component={CommonlyWrongQuestion}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="WebViewScreen"
           component={WebViewScreen}
           options={{ headerShown: false }}
@@ -128,9 +140,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <AdsVisibilityProvider>
-        <AdTouchProvider>
-          <AppNavigator />
-        </AdTouchProvider>
+        <AppNavigator />
       </AdsVisibilityProvider>
     </ThemeProvider>
   );

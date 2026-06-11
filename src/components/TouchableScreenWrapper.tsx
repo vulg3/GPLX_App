@@ -1,6 +1,5 @@
 import React from "react";
-import { TouchableWithoutFeedback, View, ViewStyle } from "react-native";
-import { useAdTouch } from "../contexts/AdTouchContext";
+import { View, ViewStyle } from "react-native";
 
 interface TouchableScreenWrapperProps {
   children: React.ReactNode;
@@ -8,18 +7,14 @@ interface TouchableScreenWrapperProps {
 }
 
 /**
- * A wrapper component that tracks touches and shows ads after random 100-150 touches
- * Wrap any screen content with this component to enable ad tracking
+ * Passthrough wrapper kept for API compatibility with the many screens that
+ * import it. Interstitials are no longer triggered by random touch counts —
+ * they now fire only at natural break points (see AdMobService usage in
+ * Exam submit). This component intentionally adds no behaviour.
  */
 export const TouchableScreenWrapper: React.FC<TouchableScreenWrapperProps> = ({
   children,
   style,
 }) => {
-  const { handleTouch } = useAdTouch();
-
-  return (
-    <View style={[{ flex: 1 }, style]} onTouchStart={handleTouch}>
-      {children}
-    </View>
-  );
+  return <View style={[{ flex: 1 }, style]}>{children}</View>;
 };

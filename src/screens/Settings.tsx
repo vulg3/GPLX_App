@@ -2,6 +2,7 @@ import { responsive } from "@/utils/responsive";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import {
   Alert,
@@ -15,17 +16,64 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { APP_INFO } from "../constants/legalUrls";
 import { useAdsVisibility } from "../contexts/AdsVisibilityContext";
 import { useTheme } from "../contexts/ThemeContext";
+import { gradients } from "../theme/tokens";
+import {
+  DEFAULT_DAILY_GOAL,
+  getStreak,
+  setDailyGoal as persistDailyGoal,
+} from "../utils/streak";
+import {
+  getNotifSettings,
+  NotifSettings,
+  REMINDER_HOUR_PRESETS,
+  setReminderHour,
+  setRemindersEnabled,
+} from "../utils/notifications";
+
+const GOAL_PRESETS = [10, 20, 30, 50];
 
 export default function Settings() {
   const navigation = useNavigation();
-  const { isDarkMode, setTheme, theme } = useTheme();
+  const { isDarkMode, colors, setTheme, theme } = useTheme();
+  const insets = useSafeAreaInsets();
   const { adsHidden, setAdsHiddenState } = useAdsVisibility();
   const [showPasswordModal, setShowPasswordModal] = React.useState(false);
   const [passwordInput, setPasswordInput] = React.useState("");
+  const [dailyGoal, setDailyGoalState] = React.useState(DEFAULT_DAILY_GOAL);
+  const [notif, setNotif] = React.useState<NotifSettings>({
+    enabled: false,
+    hour: 20,
+  });
+
+  React.useEffect(() => {
+    getStreak().then((s) => setDailyGoalState(s.dailyGoal));
+    getNotifSettings().then(setNotif);
+  }, []);
+
+  const handleSelectGoal = async (goal: number) => {
+    const updated = await persistDailyGoal(goal);
+    setDailyGoalState(updated.dailyGoal);
+  };
+
+  const handleToggleReminders = async (enabled: boolean) => {
+    const updated = await setRemindersEnabled(enabled);
+    setNotif(updated);
+    if (enabled && !updated.enabled) {
+      Alert.alert(
+        "Cần quyền thông báo",
+        "Hãy bật quyền thông báo cho ứng dụng trong Cài đặt để nhận nhắc nhở học."
+      );
+    }
+  };
+
+  const handleSelectHour = async (hour: number) => {
+    const updated = await setReminderHour(hour);
+    setNotif(updated);
+  };
 
   const toggleTheme = async () => {
     try {
@@ -95,31 +143,33 @@ export default function Settings() {
     }
   };
 
-  const backgroundColor = isDarkMode ? "#1a1a1a" : "#f8f9fa";
-  const cardBackground = isDarkMode ? "#2a2a2a" : "#fff";
-  const textColor = isDarkMode ? "#fff" : "#1a1a1a";
-  const subTextColor = isDarkMode ? "#aaa" : "#666";
-  const borderColor = isDarkMode ? "#444" : "#eee";
+  const backgroundColor = colors.background;
+  const cardBackground = colors.card;
+  const textColor = colors.text;
+  const subTextColor = colors.subText;
+  const borderColor = colors.border;
 
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor }]}
-      edges={["top"]}
+      edges={[]}
     >
       <StatusBar
-        barStyle={isDarkMode ? "light-content" : "dark-content"}
-        backgroundColor={backgroundColor}
+        barStyle="light-content"
+        backgroundColor={isDarkMode ? backgroundColor : "#667eea"}
       />
+      {/* Header */}
+      <LinearGradient
+        colors={isDarkMode ? [colors.card, colors.background] : gradients.primary}
+        style={[styles.headerGradient, { paddingTop: insets.top + 10 }]}
+      >
+        <Text style={styles.headerTitle}>Cài đặt</Text>
+      </LinearGradient>
+
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={[styles.headerTitle, { color: textColor }]}>
-            Cài đặt
-          </Text>
-        </View>
 
         {/* Settings Section */}
         <View style={styles.content}>
@@ -143,6 +193,109 @@ export default function Settings() {
                 thumbColor={"#fff"}
               />
             </TouchableOpacity>
+          </View>
+
+          {/* Study Goal Section */}
+          <View style={[styles.section, { backgroundColor: cardBackground }]}>
+            <View style={styles.settingRow}>
+              <View style={styles.settingLeft}>
+                <Ionicons name="flag" size={24} color={colors.primary} />
+                <Text style={[styles.settingTitle, { color: textColor }]}>
+                  Mục tiêu mỗi ngày
+                </Text>
+              </View>
+              <Text style={[styles.settingValue, { color: subTextColor }]}>
+                {dailyGoal} câu
+              </Text>
+            </View>
+            <View style={styles.chipRow}>
+              {GOAL_PRESETS.map((goal) => {
+                const active = goal === dailyGoal;
+                return (
+                  <TouchableOpacity
+                    key={goal}
+                    style={[
+                      styles.chip,
+                      {
+                        backgroundColor: active
+                          ? colors.primary
+                          : colors.background,
+                        borderColor: active ? colors.primary : borderColor,
+                      },
+                    ]}
+                    onPress={() => handleSelectGoal(goal)}
+                  >
+                    <Text
+                      style={[
+                        styles.chipText,
+                        { color: active ? "#fff" : textColor },
+                      ]}
+                    >
+                      {goal}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+
+          {/* Reminders Section */}
+          <View style={[styles.section, { backgroundColor: cardBackground }]}>
+            <View style={styles.settingRow}>
+              <View style={styles.settingLeft}>
+                <Ionicons
+                  name="notifications"
+                  size={24}
+                  color={colors.warning}
+                />
+                <Text style={[styles.settingTitle, { color: textColor }]}>
+                  Nhắc nhở học mỗi ngày
+                </Text>
+              </View>
+              <Switch
+                value={notif.enabled}
+                onValueChange={handleToggleReminders}
+                trackColor={{ false: "#d1d1d6", true: colors.primary }}
+                thumbColor={"#fff"}
+              />
+            </View>
+            {notif.enabled && (
+              <>
+                <View style={[styles.divider, { backgroundColor: borderColor }]} />
+                <Text style={[styles.reminderHint, { color: subTextColor }]}>
+                  Giờ nhắc nhở
+                </Text>
+                <View style={styles.chipRow}>
+                  {REMINDER_HOUR_PRESETS.map((hour) => {
+                    const active = hour === notif.hour;
+                    return (
+                      <TouchableOpacity
+                        key={hour}
+                        style={[
+                          styles.chip,
+                          {
+                            backgroundColor: active
+                              ? colors.primary
+                              : colors.background,
+                            borderColor: active ? colors.primary : borderColor,
+                          },
+                        ]}
+                        onPress={() => handleSelectHour(hour)}
+                      >
+                        <Text
+                          style={[
+                            styles.chipText,
+                            { color: active ? "#fff" : textColor },
+                          ]}
+                        >
+                          {String(hour).padStart(2, "0")}:00
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              </>
+            )}
           </View>
 
           {/* About Section */}
@@ -345,14 +498,14 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-  header: {
-    paddingHorizontal: responsive.padding.lg,
-    paddingTop: responsive.padding.lg,
-    paddingBottom: responsive.padding.base,
+  headerGradient: {
+    padding: responsive.padding.lg,
+    paddingBottom: responsive.padding.xl,
   },
   headerTitle: {
     fontSize: responsive.fontSize["3xl"],
     fontWeight: "bold",
+    color: "#fff",
   },
   content: {
     padding: responsive.padding.base,
@@ -390,6 +543,28 @@ const styles = StyleSheet.create({
   divider: {
     height: 1,
     marginVertical: responsive.spacing.sm,
+  },
+  chipRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: responsive.spacing.sm,
+    paddingVertical: responsive.padding.sm,
+  },
+  chip: {
+    paddingHorizontal: responsive.padding.base,
+    paddingVertical: responsive.padding.sm,
+    borderRadius: responsive.radius.full,
+    borderWidth: 1,
+    minWidth: 56,
+    alignItems: "center",
+  },
+  chipText: {
+    fontSize: responsive.fontSize.base,
+    fontWeight: "600",
+  },
+  reminderHint: {
+    fontSize: responsive.fontSize.sm,
+    marginLeft: responsive.spacing.xs,
   },
   footer: {
     alignItems: "center",

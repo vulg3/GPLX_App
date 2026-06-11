@@ -1,4 +1,5 @@
 export { default as CarTab } from "./CarTab";
+export { default as CommonlyWrongQuestion } from "./CommonlyWrongQuestion";
 export { default as Exam } from "./Exam";
 export { default as ExamHistory } from "./ExamHistory";
 export { default as ExamResult } from "./ExamResult";

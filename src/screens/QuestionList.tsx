@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Dimensions,
   Image,
@@ -21,6 +21,10 @@ import {
 import { useTheme } from "../contexts/ThemeContext";
 import { Question } from "../types/Question";
 import { getCategoryDisplayName } from "../utils/examGenerator";
+import { haptics } from "../utils/haptics";
+import { responsive } from "../utils/responsive";
+import { recordStudyActivity } from "../utils/streak";
+import { refreshReminder } from "../utils/notifications";
 
 const { width } = Dimensions.get("window");
 
@@ -34,7 +38,7 @@ export default function QuestionList() {
   };
 
   const [selectedAnswers, setSelectedAnswers] = useState<Map<string, number>>(
-    new Map()
+    new Map(),
   );
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
@@ -56,9 +60,15 @@ export default function QuestionList() {
   }, [currentQuestionIndex]);
 
   const handleAnswerSelect = (questionId: string, answerIndex: number) => {
+    const firstTime = !selectedAnswers.has(questionId);
     const newSelected = new Map(selectedAnswers);
     newSelected.set(questionId, answerIndex);
     setSelectedAnswers(newSelected);
+    haptics.selection();
+    // Count each newly-answered question toward the daily streak goal.
+    if (firstTime) {
+      recordStudyActivity(1).then(() => refreshReminder());
+    }
   };
 
   const handleNext = () => {
@@ -100,20 +110,20 @@ export default function QuestionList() {
             },
           ],
           showResult &&
-          isCorrect && [
-            styles.answerCorrect,
-            {
-              backgroundColor: isDarkMode ? "#1e4620" : "#d4edda",
-            },
-          ],
+            isCorrect && [
+              styles.answerCorrect,
+              {
+                backgroundColor: isDarkMode ? "#1e4620" : "#d4edda",
+              },
+            ],
           showResult &&
-          isSelected &&
-          !isCorrect && [
-            styles.answerIncorrect,
-            {
-              backgroundColor: isDarkMode ? "#4a1a1a" : "#f8d7da",
-            },
-          ],
+            isSelected &&
+            !isCorrect && [
+              styles.answerIncorrect,
+              {
+                backgroundColor: isDarkMode ? "#4a1a1a" : "#f8d7da",
+              },
+            ],
         ]}
       >
         <View style={styles.answerLeft}>
@@ -124,9 +134,9 @@ export default function QuestionList() {
               isSelected && styles.answerIndicatorSelected,
               showResult && isCorrect && styles.answerIndicatorCorrect,
               showResult &&
-              isSelected &&
-              !isCorrect &&
-              styles.answerIndicatorIncorrect,
+                isSelected &&
+                !isCorrect &&
+                styles.answerIndicatorIncorrect,
             ]}
           >
             {isSelected && !showResult && (
@@ -144,9 +154,9 @@ export default function QuestionList() {
               isSelected && styles.answerTextSelected,
               showResult && isCorrect && styles.answerTextCorrect,
               showResult &&
-              isSelected &&
-              !isCorrect &&
-              styles.answerTextIncorrect,
+                isSelected &&
+                !isCorrect &&
+                styles.answerTextIncorrect,
             ]}
           >
             {answer.text}
@@ -162,6 +172,7 @@ export default function QuestionList() {
 
     const questionId = question._id.$oid;
     const isDiemLiet = question.category.includes("diem-liet");
+    const isAnswered = selectedAnswers.has(questionId);
 
     return (
       <AnimatedCard
@@ -225,7 +236,7 @@ export default function QuestionList() {
             </Animated.View>
           ))}
 
-          {question.explanation && (
+          {isAnswered && question.explanation && (
             <Animated.View
               entering={FadeInDown.delay(400).springify()}
               style={[
@@ -292,7 +303,7 @@ export default function QuestionList() {
               Câu {currentQuestionIndex + 1}/{questions.length}
             </Text>
           </View>
-          <View style={{ width: 80 }} />
+          <View style={{ width: responsive.header.padding * 5 }} />
         </View>
 
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -340,7 +351,7 @@ export default function QuestionList() {
               style={[
                 styles.navButtonWrapper,
                 currentQuestionIndex === questions.length - 1 &&
-                styles.navButtonDisabled,
+                  styles.navButtonDisabled,
               ]}
               onPress={handleNext}
               disabled={currentQuestionIndex === questions.length - 1}
@@ -359,7 +370,7 @@ export default function QuestionList() {
                   style={[
                     styles.navButtonText,
                     currentQuestionIndex === questions.length - 1 &&
-                    styles.navButtonTextDisabled,
+                      styles.navButtonTextDisabled,
                   ]}
                 >
                   Câu sau ›
@@ -433,31 +444,34 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: 16,
+    paddingHorizontal: responsive.padding.base,
+    paddingVertical: responsive.padding.sm,
+    minHeight: responsive.header.height,
     borderBottomWidth: 1,
   },
   backButton: {
-    width: 80,
+    width: responsive.header.padding * 5,
   },
   backButtonText: {
-    fontSize: 18,
+    fontSize: responsive.fontSize.lg,
     color: "#007AFF",
+    fontWeight: "600",
   },
   headerTitleContainer: {
     flex: 1,
     alignItems: "center",
   },
   headerTitle: {
-    fontSize: 16,
+    fontSize: responsive.fontSize.lg,
     fontWeight: "bold",
   },
   headerSubtitle: {
-    fontSize: 12,
+    fontSize: responsive.fontSize.xs,
     marginTop: 2,
   },
   content: {
     flex: 1,
-    padding: 16,
+    padding: responsive.padding.base,
   },
   questionCard: {
     padding: 16,
@@ -616,15 +630,15 @@ const styles = StyleSheet.create({
   },
   navigation: {
     borderTopWidth: 1,
-    paddingBottom: 8,
+    paddingBottom: responsive.padding.xs,
   },
   navigationButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 8,
-    gap: 12,
+    paddingHorizontal: responsive.padding.base,
+    paddingTop: responsive.padding.sm,
+    paddingBottom: responsive.padding.xs,
+    gap: responsive.spacing.sm,
   },
   navButtonWrapper: {
     flex: 1,

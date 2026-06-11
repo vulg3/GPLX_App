@@ -40,6 +40,32 @@ export interface StudyProgress {
   lastStudiedDate: string;
 }
 
+export type TopicCategory =
+  | "concepts_rules"
+  | "transport_ops"
+  | "driver_ethics"
+  | "driving_tech_construct"
+  | "road_signs"
+  | "traffic_situations";
+
+export interface TopicStats {
+  topic: TopicCategory;
+  displayName: string;
+  correct: number;
+  total: number;
+  percentage: number;
+}
+
+export interface AnalyticsData {
+  expectedPassRate: number;
+  topicStats: TopicStats[];
+  examHistory: {
+    date: string;
+    score: number;
+    passed: boolean;
+  }[];
+}
+
 
 
 

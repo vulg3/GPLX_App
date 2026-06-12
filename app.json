@@ -2,7 +2,7 @@
   "expo": {
     "name": "Lý thuyết giao thông",
     "slug": "lythuyetgiaothong",
-    "version": "1.4",
+    "version": "1.5",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "scheme": "gplxapp",
@@ -42,7 +42,7 @@
             "deploymentTarget": "15.1"
           },
           "android": {
-            "enableProguardInReleaseBuilds": true,
+            "enableMinifyInReleaseBuilds": true,
             "enableShrinkResourcesInReleaseBuilds": true,
             "minSdkVersion": 24,
             "compileSdkVersion": 35,
